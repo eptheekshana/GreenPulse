@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenPulse | Smart Greenhouse System</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Using standard FontAwesome style icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <i class="ph-fill ph-leaf brand-icon"></i>
+                <span class="brand-text">GreenPulse</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#hardware">Hardware</a>
+                <a href="http://greenpulse.local" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+                    <i class="ph-bold ph-chart-bar"></i> View Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Smart Greenhouse Automation System</h1>
+                <p class="hero-subtitle">
+                    A reliable, edge-computing powered irrigation and monitoring system. GreenPulse continuously reads environmental sensors and automatically controls water pumps based on precise soil saturation levels.
+                </p>
+                <div class="hero-actions">
+                    <a href="http://greenpulse.local" class="btn btn-primary btn-large" target="_blank" rel="noopener noreferrer">
+                        Access Local Dashboard
+                    </a>
+                    <a href="#features" class="btn btn-outline btn-large">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image-placeholder">
+                <i class="ph-duotone ph-plant" style="font-size: 8rem; color: #2e7d32;"></i>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features section">
+            <div class="section-header">
+                <h2>System Features</h2>
+                <hr class="divider">
+            </div>
+            <div class="grid features-grid">
+                <div class="card">
+                    <div class="card-icon"><i class="ph-fill ph-drop"></i></div>
+                    <h3>Automated Irrigation</h3>
+                    <p>Precise soil moisture tracking automatically controls water pumps to maintain perfect saturation, preventing over-watering.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="ph-fill ph-chart-line-up"></i></div>
+                    <h3>Live Telemetry</h3>
+                    <p>High-resolution monitoring of temperature, humidity, and ambient light levels, streamed in real-time to your local dashboard.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="ph-fill ph-shield-check"></i></div>
+                    <h3>Fail-Safe Protection</h3>
+                    <p>Integrated reservoir level sensing ensures water pumps are instantly disabled if the tank runs dry.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="ph-fill ph-wifi-high"></i></div>
+                    <h3>Local First</h3>
+                    <p>Operates entirely on your local Wi-Fi network. No cloud subscriptions, and no internet dependency required.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Components Section -->
+        <section id="hardware" class="hardware section bg-light">
+            <div class="section-header">
+                <h2>Hardware Components</h2>
+                <hr class="divider">
+            </div>
+            <div class="list-wrapper">
+                <div class="list-item">
+                    <div class="list-icon"><i class="ph-fill ph-cpu"></i></div>
+                    <div class="list-details">
+                        <h4>ESP32 Microcontroller</h4>
+                        <p>The main processing unit providing dual-core performance and embedded Wi-Fi hosting capabilities.</p>
+                    </div>
+                </div>
+                <div class="list-item">
+                    <div class="list-icon"><i class="ph-fill ph-thermometer"></i></div>
+                    <div class="list-details">
+                        <h4>DHT11 Sensor</h4>
+                        <p>Provides accurate ambient temperature and relative humidity readings for the climate matrix.</p>
+                    </div>
+                </div>
+                <div class="list-item">
+                    <div class="list-icon"><i class="ph-fill ph-sun"></i></div>
+                    <div class="list-details">
+                        <h4>LDR Sensor</h4>
+                        <p>Photoresistor module tracking light intensity to determine optimal growing conditions.</p>
+                    </div>
+                </div>
+                <div class="list-item">
+                    <div class="list-icon"><i class="ph-fill ph-waves"></i></div>
+                    <div class="list-details">
+                        <h4>Soil & Water Sensors</h4>
+                        <p>Analog resistive sensors providing raw voltage feedback mapped to precise saturation percentages.</p>
+                    </div>
+                </div>
+                <div class="list-item">
+                    <div class="list-icon"><i class="ph-fill ph-lightning"></i></div>
+                    <div class="list-details">
+                        <h4>Relay Module</h4>
+                        <p>Electrically isolates the low-voltage ESP32 from the high-power water pump circuit.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workflow Section -->
+        <section class="workflow section">
+            <div class="section-header">
+                <h2>Execution Logic</h2>
+                <hr class="divider">
+            </div>
+            <div class="workflow-steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <h4>Sensor Polling</h4>
+                    <p>Reads raw analog and digital data every 2000ms.</p>
+                </div>
+                <i class="ph-bold ph-caret-right step-arrow"></i>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <h4>Threshold Analysis</h4>
+                    <p>Compares readings against stored user thresholds.</p>
+                </div>
+                <i class="ph-bold ph-caret-right step-arrow"></i>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <h4>Action Execution</h4>
+                    <p>Relay triggers pump if soil is dry AND water is available.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="brand">
+                <i class="ph-fill ph-leaf brand-icon"></i>
+                <span class="brand-text">GreenPulse</span>
+            </div>
+            <p>&copy; 2026 Smart Greenhouse Systems. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
