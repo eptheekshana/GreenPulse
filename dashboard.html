@@ -540,10 +540,35 @@ header {
 
         function toggleMode() {
             const newMode = !window.currentAutoMode;
+            
+            // Optimistic UI update
+            window.currentAutoMode = newMode;
+            if (newMode) {
+                elements.modeBadge.innerText = "Automatic";
+                elements.modeBadge.className = "badge active";
+                elements.btnMode.innerText = "Switch to Manual";
+                elements.btnPumpOn.disabled = true;
+                elements.btnPumpOff.disabled = true;
+            } else {
+                elements.modeBadge.innerText = "Manual";
+                elements.modeBadge.className = "badge inactive";
+                elements.btnMode.innerText = "Switch to Auto";
+                elements.btnPumpOn.disabled = false;
+                elements.btnPumpOff.disabled = false;
+            }
+            
             sendCommand({ autoMode: newMode });
         }
 
         function setPump(state) {
+            // Optimistic UI update
+            if (state === 'on') {
+                elements.pumpStatus.innerText = "ON";
+                elements.pumpStatus.className = "badge active";
+            } else {
+                elements.pumpStatus.innerText = "OFF";
+                elements.pumpStatus.className = "badge inactive";
+            }
             sendCommand({ pumpState: state });
         }
 
