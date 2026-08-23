@@ -18,6 +18,7 @@ let state = {
     light: 0.0,
     waterLevel: 0.0,
     pumpActive: false,
+    autoMode: true,
     alert: ""
 };
 
@@ -63,6 +64,7 @@ app.post('/api/telemetry', (req, res) => {
     }
 
     if (data.pumpActive !== undefined) state.pumpActive = data.pumpActive;
+    if (data.autoMode !== undefined) state.autoMode = data.autoMode;
     
     // Send pending commands back to ESP32
     res.json(pendingCommands);

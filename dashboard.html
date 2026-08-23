@@ -249,6 +249,28 @@ header {
     border: 1px solid #ef9a9a;
 }
 
+.controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-primary { background: var(--primary-color); color: white; }
+.btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-color); }
+.btn:hover { opacity: 0.9; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .text-green {
     color: var(--primary-color);
 }
@@ -367,7 +389,7 @@ header {
                     </li>
                     <li>
                         <span>Irrigation Mode</span>
-                        <span class="badge active">Automatic</span>
+                        <span class="badge active" id="mode-badge">Automatic</span>
                     </li>
                     <li>
                         <span>ESP32 Status</span>
@@ -382,6 +404,11 @@ header {
                         <span id="last-update">Just now</span>
                     </li>
                 </ul>
+                <div class="controls">
+                    <button id="btn-mode" class="btn btn-outline" onclick="toggleMode()">Switch to Manual</button>
+                    <button id="btn-pump-on" class="btn btn-primary" onclick="setPump('on')" disabled>Pump ON</button>
+                    <button id="btn-pump-off" class="btn btn-outline" style="border-color: var(--danger-color); color: var(--danger-color);" onclick="setPump('off')" disabled>Pump OFF</button>
+                </div>
             </div>
         </main>
     </div>
@@ -400,6 +427,10 @@ header {
             waterBar: document.getElementById('water-bar'),
             pumpStatus: document.getElementById('pump-status'),
             lastUpdate: document.getElementById('last-update'),
+            modeBadge: document.getElementById('mode-badge'),
+            btnMode: document.getElementById('btn-mode'),
+            btnPumpOn: document.getElementById('btn-pump-on'),
+            btnPumpOff: document.getElementById('btn-pump-off'),
             connectionDot: document.getElementById('connection-dot'),
             connectionStatus: document.getElementById('connection-status'),
             alertBanner: document.getElementById('alert-banner'),
@@ -454,6 +485,23 @@ header {
                 elements.waterBar.style.backgroundColor = 'var(--primary-color)';
             }
 
+            
+            // Mode Update
+            window.currentAutoMode = data.autoMode;
+            if (data.autoMode) {
+                elements.modeBadge.innerText = "Automatic";
+                elements.modeBadge.className = "badge active";
+                elements.btnMode.innerText = "Switch to Manual";
+                elements.btnPumpOn.disabled = true;
+                elements.btnPumpOff.disabled = true;
+            } else {
+                elements.modeBadge.innerText = "Manual";
+                elements.modeBadge.className = "badge inactive";
+                elements.btnMode.innerText = "Switch to Auto";
+                elements.btnPumpOn.disabled = false;
+                elements.btnPumpOff.disabled = false;
+            }
+
             if (data.pumpActive) {
                 elements.pumpStatus.innerText = "ON";
                 elements.pumpStatus.className = "badge active";
@@ -476,6 +524,27 @@ header {
         function setStatus(element, text, className) {
             element.innerText = text;
             element.className = `card-status ${className}`;
+        }
+
+        async function sendCommand(payload) {
+            try {
+                await fetch('/api/command', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function toggleMode() {
+            const newMode = !window.currentAutoMode;
+            sendCommand({ autoMode: newMode });
+        }
+
+        function setPump(state) {
+            sendCommand({ pumpState: state });
         }
 
         function updateConnection(isOnline) {
