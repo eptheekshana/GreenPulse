@@ -437,6 +437,8 @@ header {
             alertMessage: document.getElementById('alert-message')
         };
 
+        let uiLock = false;
+        let uiLockTimeout = null;
         const UPDATE_INTERVAL = 2000;
 
         async function fetchSensorData() {
@@ -486,8 +488,10 @@ header {
             }
 
             
-            // Mode Update
-            window.currentAutoMode = data.autoMode;
+            // Mode Update (Skip if UI is locked by an optimistic update)
+            if (!uiLock) {
+                window.currentAutoMode = data.autoMode;
+            }
             if (data.autoMode) {
                 elements.modeBadge.innerText = "Automatic";
                 elements.modeBadge.className = "badge active";
@@ -502,12 +506,15 @@ header {
                 elements.btnPumpOff.disabled = false;
             }
 
-            if (data.pumpActive) {
-                elements.pumpStatus.innerText = "ON";
-                elements.pumpStatus.className = "badge active";
-            } else {
-                elements.pumpStatus.innerText = "OFF";
-                elements.pumpStatus.className = "badge inactive";
+            // Pump Status Update (Skip if UI is locked)
+            if (!uiLock) {
+                if (data.pumpActive) {
+                    elements.pumpStatus.innerText = "ON";
+                    elements.pumpStatus.className = "badge active";
+                } else {
+                    elements.pumpStatus.innerText = "OFF";
+                    elements.pumpStatus.className = "badge inactive";
+                }
             }
 
             if (data.alert && data.alert !== "") {
@@ -538,7 +545,14 @@ header {
             }
         }
 
+        function applyUiLock() {
+            uiLock = true;
+            if (uiLockTimeout) clearTimeout(uiLockTimeout);
+            uiLockTimeout = setTimeout(() => { uiLock = false; }, 4000);
+        }
+
         function toggleMode() {
+            applyUiLock();
             const newMode = !window.currentAutoMode;
             
             // Optimistic UI update
@@ -561,6 +575,7 @@ header {
         }
 
         function setPump(state) {
+            applyUiLock();
             // Optimistic UI update
             if (state === 'on') {
                 elements.pumpStatus.innerText = "ON";
