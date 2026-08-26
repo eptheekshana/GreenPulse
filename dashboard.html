@@ -388,10 +388,6 @@ header {
                         <span class="badge" id="pump-status">OFF</span>
                     </li>
                     <li>
-                        <span>Irrigation Mode</span>
-                        <span class="badge active" id="mode-badge">Automatic</span>
-                    </li>
-                    <li>
                         <span>ESP32 Status</span>
                         <span class="text-green">Online</span>
                     </li>
@@ -405,9 +401,8 @@ header {
                     </li>
                 </ul>
                 <div class="controls">
-                    <button id="btn-mode" class="btn btn-outline" onclick="toggleMode()">Switch to Manual</button>
-                    <button id="btn-pump-on" class="btn btn-primary" onclick="setPump('on')" disabled>Pump ON</button>
-                    <button id="btn-pump-off" class="btn btn-outline" style="border-color: var(--danger-color); color: var(--danger-color);" onclick="setPump('off')" disabled>Pump OFF</button>
+                    <button id="btn-pump-on" class="btn btn-primary" onclick="setPump('on')">Pump ON</button>
+                    <button id="btn-pump-off" class="btn btn-outline" style="border-color: var(--danger-color); color: var(--danger-color);" onclick="setPump('off')">Pump OFF</button>
                 </div>
             </div>
         </main>
@@ -427,8 +422,6 @@ header {
             waterBar: document.getElementById('water-bar'),
             pumpStatus: document.getElementById('pump-status'),
             lastUpdate: document.getElementById('last-update'),
-            modeBadge: document.getElementById('mode-badge'),
-            btnMode: document.getElementById('btn-mode'),
             btnPumpOn: document.getElementById('btn-pump-on'),
             btnPumpOff: document.getElementById('btn-pump-off'),
             connectionDot: document.getElementById('connection-dot'),
@@ -487,25 +480,6 @@ header {
                 elements.waterBar.style.backgroundColor = 'var(--primary-color)';
             }
 
-            
-            // Mode Update (Skip if UI is locked by an optimistic update)
-            if (!uiLock) {
-                window.currentAutoMode = data.autoMode;
-            }
-            if (data.autoMode) {
-                elements.modeBadge.innerText = "Automatic";
-                elements.modeBadge.className = "badge active";
-                elements.btnMode.innerText = "Switch to Manual";
-                elements.btnPumpOn.disabled = true;
-                elements.btnPumpOff.disabled = true;
-            } else {
-                elements.modeBadge.innerText = "Manual";
-                elements.modeBadge.className = "badge inactive";
-                elements.btnMode.innerText = "Switch to Auto";
-                elements.btnPumpOn.disabled = false;
-                elements.btnPumpOff.disabled = false;
-            }
-
             // Pump Status Update (Skip if UI is locked)
             if (!uiLock) {
                 if (data.pumpActive) {
@@ -549,29 +523,6 @@ header {
             uiLock = true;
             if (uiLockTimeout) clearTimeout(uiLockTimeout);
             uiLockTimeout = setTimeout(() => { uiLock = false; }, 4000);
-        }
-
-        function toggleMode() {
-            applyUiLock();
-            const newMode = !window.currentAutoMode;
-            
-            // Optimistic UI update
-            window.currentAutoMode = newMode;
-            if (newMode) {
-                elements.modeBadge.innerText = "Automatic";
-                elements.modeBadge.className = "badge active";
-                elements.btnMode.innerText = "Switch to Manual";
-                elements.btnPumpOn.disabled = true;
-                elements.btnPumpOff.disabled = true;
-            } else {
-                elements.modeBadge.innerText = "Manual";
-                elements.modeBadge.className = "badge inactive";
-                elements.btnMode.innerText = "Switch to Auto";
-                elements.btnPumpOn.disabled = false;
-                elements.btnPumpOff.disabled = false;
-            }
-            
-            sendCommand({ autoMode: newMode });
         }
 
         function setPump(state) {
