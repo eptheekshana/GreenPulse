@@ -249,6 +249,12 @@ header {
     border: 1px solid #ef9a9a;
 }
 
+.badge.warning {
+    background: #fff3e0;
+    color: var(--accent-color);
+    border: 1px solid #ffcc80;
+}
+
 .controls {
     display: flex;
     gap: 0.5rem;
@@ -384,6 +390,10 @@ header {
                 </div>
                 <ul class="system-list">
                     <li>
+                        <span>Mode</span>
+                        <span class="badge active" id="mode-status">AUTO</span>
+                    </li>
+                    <li>
                         <span>Pump Status</span>
                         <span class="badge" id="pump-status">OFF</span>
                     </li>
@@ -400,9 +410,15 @@ header {
                         <span id="last-update">Just now</span>
                     </li>
                 </ul>
-                <div class="controls">
-                    <button id="btn-pump-on" class="btn btn-primary" onclick="setPump('on')">Pump ON</button>
-                    <button id="btn-pump-off" class="btn btn-outline" style="border-color: var(--danger-color); color: var(--danger-color);" onclick="setPump('off')">Pump OFF</button>
+                <div class="controls" style="justify-content: space-between; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <button id="btn-mode-auto" class="btn btn-primary" onclick="setMode(true)">Auto</button>
+                        <button id="btn-mode-manual" class="btn btn-outline" onclick="setMode(false)">Manual</button>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <button id="btn-pump-on" class="btn btn-primary" onclick="setPump('on')">Pump ON</button>
+                        <button id="btn-pump-off" class="btn btn-outline" style="border-color: var(--danger-color); color: var(--danger-color);" onclick="setPump('off')">Pump OFF</button>
+                    </div>
                 </div>
             </div>
         </main>
@@ -420,6 +436,9 @@ header {
             waterVal: document.getElementById('water-val'),
             waterStatus: document.getElementById('water-status'),
             waterBar: document.getElementById('water-bar'),
+            modeStatus: document.getElementById('mode-status'),
+            btnModeAuto: document.getElementById('btn-mode-auto'),
+            btnModeManual: document.getElementById('btn-mode-manual'),
             pumpStatus: document.getElementById('pump-status'),
             lastUpdate: document.getElementById('last-update'),
             btnPumpOn: document.getElementById('btn-pump-on'),
@@ -489,6 +508,22 @@ header {
                     elements.pumpStatus.innerText = "OFF";
                     elements.pumpStatus.className = "badge inactive";
                 }
+                
+                if (data.autoMode) {
+                    elements.modeStatus.innerText = "AUTO";
+                    elements.modeStatus.className = "badge active";
+                    elements.btnModeAuto.className = "btn btn-primary";
+                    elements.btnModeManual.className = "btn btn-outline";
+                    elements.btnPumpOn.disabled = true;
+                    elements.btnPumpOff.disabled = true;
+                } else {
+                    elements.modeStatus.innerText = "MANUAL";
+                    elements.modeStatus.className = "badge warning";
+                    elements.btnModeAuto.className = "btn btn-outline";
+                    elements.btnModeManual.className = "btn btn-primary";
+                    elements.btnPumpOn.disabled = false;
+                    elements.btnPumpOff.disabled = false;
+                }
             }
 
             if (data.alert && data.alert !== "") {
@@ -535,7 +570,31 @@ header {
                 elements.pumpStatus.innerText = "OFF";
                 elements.pumpStatus.className = "badge inactive";
             }
+            elements.modeStatus.innerText = "MANUAL";
+            elements.modeStatus.className = "badge warning";
+            elements.btnModeAuto.className = "btn btn-outline";
+            elements.btnModeManual.className = "btn btn-primary";
             sendCommand({ pumpState: state });
+        }
+
+        function setMode(isAuto) {
+            applyUiLock();
+            if (isAuto) {
+                elements.modeStatus.innerText = "AUTO";
+                elements.modeStatus.className = "badge active";
+                elements.btnModeAuto.className = "btn btn-primary";
+                elements.btnModeManual.className = "btn btn-outline";
+                elements.btnPumpOn.disabled = true;
+                elements.btnPumpOff.disabled = true;
+            } else {
+                elements.modeStatus.innerText = "MANUAL";
+                elements.modeStatus.className = "badge warning";
+                elements.btnModeAuto.className = "btn btn-outline";
+                elements.btnModeManual.className = "btn btn-primary";
+                elements.btnPumpOn.disabled = false;
+                elements.btnPumpOff.disabled = false;
+            }
+            sendCommand({ autoMode: isAuto });
         }
 
         function updateConnection(isOnline) {
