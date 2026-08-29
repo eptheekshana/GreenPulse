@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | GreenPulse</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Using Google Fonts (Outfit) as defined in the plan -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -42,7 +41,7 @@
 
         <main class="dashboard-grid">
             <!-- Environment Cards -->
-            <div class="card glass">
+            <div class="card">
                 <div class="card-header">
                     <h3>Temperature</h3>
                     <div class="icon"><i class="ph-fill ph-thermometer"></i></div>
@@ -52,7 +51,7 @@
                 </div>
             </div>
 
-            <div class="card glass">
+            <div class="card">
                 <div class="card-header">
                     <h3>Humidity</h3>
                     <div class="icon"><i class="ph-fill ph-drop"></i></div>
@@ -62,7 +61,7 @@
                 </div>
             </div>
 
-            <div class="card glass highlight">
+            <div class="card highlight">
                 <div class="card-header">
                     <h3>Soil Moisture</h3>
                     <div class="icon"><i class="ph-fill ph-plant"></i></div>
@@ -75,7 +74,7 @@
                 </div>
             </div>
 
-            <div class="card glass">
+            <div class="card">
                 <div class="card-header">
                     <h3>Water Level</h3>
                     <div class="icon"><i class="ph-fill ph-waves"></i></div>
@@ -88,10 +87,10 @@
                 </div>
             </div>
 
-            <!-- Historical Data Chart -->
-            <div class="card glass chart-panel">
+            <!-- Combined Historical Chart -->
+            <div class="card chart-panel" style="margin-bottom: 1.5rem;">
                 <div class="card-header">
-                    <h3>Environmental History</h3>
+                    <h3>All-in-One Environmental History</h3>
                     <div class="icon"><i class="ph-fill ph-chart-line-up"></i></div>
                 </div>
                 <div style="position: relative; height: 350px; width: 100%;">
@@ -99,8 +98,61 @@
                 </div>
             </div>
 
+            <!-- Separate Historical Charts -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; grid-column: 1 / -1;">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Soil Moisture History</h3>
+                    </div>
+                    <div style="position: relative; height: 250px; width: 100%;">
+                        <canvas id="soilChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Temperature History</h3>
+                    </div>
+                    <div style="position: relative; height: 250px; width: 100%;">
+                        <canvas id="tempChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Humidity History</h3>
+                    </div>
+                    <div style="position: relative; height: 250px; width: 100%;">
+                        <canvas id="humChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Pump Activity Log -->
+            <div class="card system-panel">
+                <div class="card-header">
+                    <h3>Pump Activity Log</h3>
+                    <div class="icon"><i class="ph-fill ph-clock-counter-clockwise"></i></div>
+                </div>
+                <div style="max-height: 300px; overflow-y: auto; margin-top: 1rem;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <th style="padding: 0.75rem; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase;">Time</th>
+                                <th style="padding: 0.75rem; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase;">Event</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pump-log-body">
+                            <tr><td colspan="2" style="padding: 1rem; text-align: center; color: var(--text-muted);">Fetching log...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- System Info Panel -->
-            <div class="card glass system-panel">
+            <div class="card system-panel">
                 <div class="card-header">
                     <h3>System Controller</h3>
                 </div>
@@ -155,89 +207,100 @@
             connectionDot: document.getElementById('connection-dot'),
             connectionStatus: document.getElementById('connection-status'),
             alertBanner: document.getElementById('alert-banner'),
-            alertMessage: document.getElementById('alert-message')
+            alertMessage: document.getElementById('alert-message'),
+            pumpLogBody: document.getElementById('pump-log-body')
         };
 
         let uiLock = false;
         let uiLockTimeout = null;
         const UPDATE_INTERVAL = 2000;
         
-        // Chart.js Setup
-        const ctx = document.getElementById('historyChart').getContext('2d');
+        // Chart.js Setup for 3 separate charts
         const getChartColors = () => {
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
             return {
                 gridColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-                textColor: isDark ? '#9ca3af' : '#6b7280'
+                textColor: isDark ? '#94a3b8' : '#64748b'
             };
         };
 
         let chartColors = getChartColors();
 
-        const historyChart = new Chart(ctx, {
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: { grid: { color: chartColors.gridColor }, ticks: { color: chartColors.textColor } },
+                y: { grid: { color: chartColors.gridColor }, ticks: { color: chartColors.textColor } }
+            },
+            animation: { duration: 0 }
+        };
+
+        const ctxHistory = document.getElementById('historyChart').getContext('2d');
+        const historyChart = new Chart(ctxHistory, {
             type: 'line',
             data: {
                 labels: [],
                 datasets: [
-                    {
-                        label: 'Soil Moisture (%)',
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        data: [],
-                        tension: 0.4,
-                        fill: true
-                    },
-                    {
-                        label: 'Temperature (°C)',
-                        borderColor: '#f59e0b',
-                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                        data: [],
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Humidity (%)',
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        data: [],
-                        tension: 0.4
-                    }
+                    { label: 'Soil Moisture (%)', borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', data: [], tension: 0.4, fill: true },
+                    { label: 'Temperature (°C)', borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)', data: [], tension: 0.4 },
+                    { label: 'Humidity (%)', borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', data: [], tension: 0.4 }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: { color: chartColors.textColor }
-                    }
-                },
+                plugins: { legend: { labels: { color: chartColors.textColor } } },
                 scales: {
-                    x: {
-                        grid: { color: chartColors.gridColor },
-                        ticks: { color: chartColors.textColor }
-                    },
-                    y: {
-                        grid: { color: chartColors.gridColor },
-                        ticks: { color: chartColors.textColor }
-                    }
+                    x: { grid: { color: chartColors.gridColor }, ticks: { color: chartColors.textColor } },
+                    y: { grid: { color: chartColors.gridColor }, ticks: { color: chartColors.textColor } }
                 },
-                animation: { duration: 0 } // Disable animation for live updates
+                animation: { duration: 0 }
             }
         });
+
+        const ctxSoil = document.getElementById('soilChart').getContext('2d');
+        const soilChart = new Chart(ctxSoil, {
+            type: 'line',
+            data: { labels: [], datasets: [{ borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', data: [], tension: 0.4, fill: true }] },
+            options: commonOptions
+        });
+
+        const ctxTemp = document.getElementById('tempChart').getContext('2d');
+        const tempChart = new Chart(ctxTemp, {
+            type: 'line',
+            data: { labels: [], datasets: [{ borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)', data: [], tension: 0.4, fill: true }] },
+            options: commonOptions
+        });
+
+        const ctxHum = document.getElementById('humChart').getContext('2d');
+        const humChart = new Chart(ctxHum, {
+            type: 'line',
+            data: { labels: [], datasets: [{ borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', data: [], tension: 0.4, fill: true }] },
+            options: commonOptions
+        });
+
+        const allCharts = [historyChart, soilChart, tempChart, humChart];
 
         // Listen for theme changes from script.js
         window.addEventListener('themeChanged', () => {
             chartColors = getChartColors();
             historyChart.options.plugins.legend.labels.color = chartColors.textColor;
-            historyChart.options.scales.x.grid.color = chartColors.gridColor;
-            historyChart.options.scales.x.ticks.color = chartColors.textColor;
-            historyChart.options.scales.y.grid.color = chartColors.gridColor;
-            historyChart.options.scales.y.ticks.color = chartColors.textColor;
-            historyChart.update();
+            allCharts.forEach(chart => {
+                chart.options.scales.x.grid.color = chartColors.gridColor;
+                chart.options.scales.x.ticks.color = chartColors.textColor;
+                chart.options.scales.y.grid.color = chartColors.gridColor;
+                chart.options.scales.y.ticks.color = chartColors.textColor;
+                chart.update();
+            });
         });
 
         async function fetchSensorData() {
             try {
+                // Fetch current data
                 const response = await fetch('/api/data');
                 if (!response.ok) throw new Error('Network error');
                 const data = await response.json();
@@ -246,7 +309,12 @@
                 // Fetch History
                 const histResponse = await fetch('/api/history');
                 const historyData = await histResponse.json();
-                updateChart(historyData);
+                updateCharts(historyData);
+
+                // Fetch Pump Events
+                const pumpResponse = await fetch('/api/pump-history');
+                const pumpEvents = await pumpResponse.json();
+                updatePumpLog(pumpEvents);
 
                 updateConnection(true);
             } catch (error) {
@@ -255,7 +323,7 @@
             }
         }
 
-        function updateChart(historyData) {
+        function updateCharts(historyData) {
             const labels = [];
             const soilData = [];
             const tempData = [];
@@ -274,6 +342,40 @@
             historyChart.data.datasets[1].data = tempData;
             historyChart.data.datasets[2].data = humData;
             historyChart.update();
+
+            soilChart.data.labels = labels;
+            soilChart.data.datasets[0].data = soilData;
+            soilChart.update();
+
+            tempChart.data.labels = labels;
+            tempChart.data.datasets[0].data = tempData;
+            tempChart.update();
+
+            humChart.data.labels = labels;
+            humChart.data.datasets[0].data = humData;
+            humChart.update();
+        }
+
+        function updatePumpLog(events) {
+            if (events.length === 0) {
+                elements.pumpLogBody.innerHTML = `<tr><td colspan="2" style="padding: 1rem; text-align: center; color: var(--text-muted);">No pump activity recorded yet</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            events.forEach(ev => {
+                const date = new Date(ev.timestamp);
+                const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const badgeClass = ev.state === 'ON' ? 'badge active' : 'badge inactive';
+                
+                html += `
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem; color: var(--text-main); font-size: 0.95rem;">${timeStr}</td>
+                        <td style="padding: 0.75rem;"><span class="${badgeClass}">Pump ${ev.state}</span></td>
+                    </tr>
+                `;
+            });
+            elements.pumpLogBody.innerHTML = html;
         }
 
         function updateDashboard(data) {
@@ -290,7 +392,7 @@
             } else if (data.soilMoisture < 60) {
                 elements.soilBar.style.backgroundColor = 'var(--primary)';
             } else {
-                elements.soilBar.style.backgroundColor = 'var(--accent)';
+                elements.soilBar.style.backgroundColor = 'var(--warning)';
             }
 
             if (data.waterLevel < 20) {

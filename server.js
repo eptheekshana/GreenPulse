@@ -26,6 +26,10 @@ let state = {
 let history = [];
 const HISTORY_LIMIT = 60; // Store last 60 points
 
+// Pump History
+let pumpEvents = [];
+const PUMP_HISTORY_LIMIT = 50;
+
 // Command queue for the ESP32
 let pendingCommands = {
     pumpState: null, // "on" or "off" or null
@@ -67,7 +71,18 @@ app.post('/api/telemetry', (req, res) => {
         state.waterLevel = Math.max(0, Math.min(100, percent));
     }
 
-    if (data.pumpActive !== undefined) state.pumpActive = data.pumpActive;
+    if (data.pumpActive !== undefined) {
+        if (state.pumpActive !== data.pumpActive) {
+            pumpEvents.unshift({
+                timestamp: new Date().toISOString(),
+                state: data.pumpActive ? "ON" : "OFF"
+            });
+            if (pumpEvents.length > PUMP_HISTORY_LIMIT) {
+                pumpEvents.pop();
+            }
+        }
+        state.pumpActive = data.pumpActive;
+    }
     if (data.autoMode !== undefined) state.autoMode = data.autoMode;
     
     // Save to history array with current timestamp
@@ -99,6 +114,11 @@ app.get('/api/data', (req, res) => {
 // API for Dashboard to fetch historical data
 app.get('/api/history', (req, res) => {
     res.json(history);
+});
+
+// API for Dashboard to fetch pump history
+app.get('/api/pump-history', (req, res) => {
+    res.json(pumpEvents);
 });
 
 // API for Dashboard to send commands (not fully implemented in classic UI, but good to have)
