@@ -22,6 +22,10 @@ let state = {
     alert: ""
 };
 
+// History array for the dashboard charts
+let history = [];
+const HISTORY_LIMIT = 60; // Store last 60 points
+
 // Command queue for the ESP32
 let pendingCommands = {
     pumpState: null, // "on" or "off" or null
@@ -66,6 +70,19 @@ app.post('/api/telemetry', (req, res) => {
     if (data.pumpActive !== undefined) state.pumpActive = data.pumpActive;
     if (data.autoMode !== undefined) state.autoMode = data.autoMode;
     
+    // Save to history array with current timestamp
+    history.push({
+        timestamp: new Date().toISOString(),
+        temperature: state.temperature,
+        humidity: state.humidity,
+        soilMoisture: state.soilMoisture,
+        light: state.light,
+        waterLevel: state.waterLevel
+    });
+    if (history.length > HISTORY_LIMIT) {
+        history.shift();
+    }
+
     // Send pending commands back to ESP32
     res.json(pendingCommands);
     
@@ -77,6 +94,11 @@ app.post('/api/telemetry', (req, res) => {
 // API for Dashboard to fetch data
 app.get('/api/data', (req, res) => {
     res.json(state);
+});
+
+// API for Dashboard to fetch historical data
+app.get('/api/history', (req, res) => {
+    res.json(history);
 });
 
 // API for Dashboard to send commands (not fully implemented in classic UI, but good to have)
