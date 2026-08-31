@@ -491,13 +491,21 @@
 
         async function sendCommand(payload) {
             try {
-                await fetch('/api/command', {
+                const response = await fetch('/api/command', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+                if (!response.ok) {
+                    const data = await response.json();
+                    alert(data.error || 'Command failed');
+                    return false;
+                }
+                return true;
             } catch (e) {
                 console.error(e);
+                alert('Network error');
+                return false;
             }
         }
 
@@ -507,16 +515,25 @@
             uiLockTimeout = setTimeout(() => { uiLock = false; }, 4000);
         }
 
-        function setPump(state) {
-            applyUiLock();
+        async function setPump(state) {
+            let pin = null;
             if (state === 'on') {
-                elements.pumpStatus.innerText = "ON";
-                elements.pumpStatus.className = "badge active";
-            } else {
-                elements.pumpStatus.innerText = "OFF";
-                elements.pumpStatus.className = "badge inactive";
+                pin = prompt("Enter PIN to turn on the pump:");
+                if (pin === null) return; // User cancelled
             }
-            sendCommand({ pumpState: state });
+            
+            const success = await sendCommand({ pumpState: state, pin: pin });
+            
+            if (success) {
+                applyUiLock();
+                if (state === 'on') {
+                    elements.pumpStatus.innerText = "ON";
+                    elements.pumpStatus.className = "badge active";
+                } else {
+                    elements.pumpStatus.innerText = "OFF";
+                    elements.pumpStatus.className = "badge inactive";
+                }
+            }
         }
 
         function setMode(isAuto) {

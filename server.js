@@ -121,8 +121,16 @@ app.get('/api/pump-history', (req, res) => {
     res.json(pumpEvents);
 });
 
+const PUMP_PIN = "0928";
+
 // API for Dashboard to send commands (not fully implemented in classic UI, but good to have)
 app.post('/api/command', (req, res) => {
+    if (req.body.pumpState === 'on') {
+        if (req.body.pin !== PUMP_PIN) {
+            return res.status(401).json({ success: false, error: "Invalid PIN" });
+        }
+    }
+    
     if (req.body.pumpState) pendingCommands.pumpState = req.body.pumpState;
     if (req.body.autoMode !== undefined) pendingCommands.autoMode = req.body.autoMode;
     res.json({ success: true });
