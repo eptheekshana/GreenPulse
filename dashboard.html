@@ -87,6 +87,19 @@
                 </div>
             </div>
 
+            <div class="card">
+                <div class="card-header">
+                    <h3>Brightness</h3>
+                    <div class="icon"><i class="ph-fill ph-sun"></i></div>
+                </div>
+                <div class="card-value">
+                    <span id="light-val">--</span><span class="unit">%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="light-bar" style="width: 0%; background-color: var(--warning);"></div>
+                </div>
+            </div>
+
             <!-- Combined Historical Chart -->
             <div class="card chart-panel" style="margin-bottom: 1.5rem;">
                 <div class="card-header">
@@ -125,6 +138,15 @@
                     </div>
                     <div style="position: relative; height: 250px; width: 100%;">
                         <canvas id="humChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Light History</h3>
+                    </div>
+                    <div style="position: relative; height: 250px; width: 100%;">
+                        <canvas id="lightChart"></canvas>
                     </div>
                 </div>
 
@@ -197,6 +219,8 @@
             soilBar: document.getElementById('soil-bar'),
             waterVal: document.getElementById('water-val'),
             waterBar: document.getElementById('water-bar'),
+            lightVal: document.getElementById('light-val'),
+            lightBar: document.getElementById('light-bar'),
             modeStatus: document.getElementById('mode-status'),
             btnModeAuto: document.getElementById('btn-mode-auto'),
             btnModeManual: document.getElementById('btn-mode-manual'),
@@ -247,7 +271,8 @@
                 datasets: [
                     { label: 'Soil Moisture (%)', borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', data: [], tension: 0.4, fill: true },
                     { label: 'Temperature (°C)', borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)', data: [], tension: 0.4 },
-                    { label: 'Humidity (%)', borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', data: [], tension: 0.4 }
+                    { label: 'Humidity (%)', borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', data: [], tension: 0.4 },
+                    { label: 'Light (%)', borderColor: '#eab308', backgroundColor: 'rgba(234, 179, 8, 0.1)', data: [], tension: 0.4 }
                 ]
             },
             options: {
@@ -283,7 +308,14 @@
             options: commonOptions
         });
 
-        const allCharts = [historyChart, soilChart, tempChart, humChart];
+        const ctxLight = document.getElementById('lightChart').getContext('2d');
+        const lightChart = new Chart(ctxLight, {
+            type: 'line',
+            data: { labels: [], datasets: [{ borderColor: '#eab308', backgroundColor: 'rgba(234, 179, 8, 0.1)', data: [], tension: 0.4, fill: true }] },
+            options: commonOptions
+        });
+
+        const allCharts = [historyChart, soilChart, tempChart, humChart, lightChart];
 
         // Listen for theme changes from script.js
         window.addEventListener('themeChanged', () => {
@@ -328,6 +360,7 @@
             const soilData = [];
             const tempData = [];
             const humData = [];
+            const lightData = [];
 
             historyData.forEach(pt => {
                 const date = new Date(pt.timestamp);
@@ -335,12 +368,14 @@
                 soilData.push(pt.soilMoisture);
                 tempData.push(pt.temperature);
                 humData.push(pt.humidity);
+                lightData.push(pt.light);
             });
 
             historyChart.data.labels = labels;
             historyChart.data.datasets[0].data = soilData;
             historyChart.data.datasets[1].data = tempData;
             historyChart.data.datasets[2].data = humData;
+            historyChart.data.datasets[3].data = lightData;
             historyChart.update();
 
             soilChart.data.labels = labels;
@@ -354,6 +389,10 @@
             humChart.data.labels = labels;
             humChart.data.datasets[0].data = humData;
             humChart.update();
+
+            lightChart.data.labels = labels;
+            lightChart.data.datasets[0].data = lightData;
+            lightChart.update();
         }
 
         function updatePumpLog(events) {
@@ -383,9 +422,11 @@
             elements.humVal.innerText = Math.round(data.humidity);
             elements.soilVal.innerText = Math.round(data.soilMoisture);
             elements.waterVal.innerText = Math.round(data.waterLevel);
+            elements.lightVal.innerText = Math.round(data.light);
 
             elements.soilBar.style.width = `${data.soilMoisture}%`;
             elements.waterBar.style.width = `${data.waterLevel}%`;
+            elements.lightBar.style.width = `${data.light}%`;
 
             if (data.soilMoisture < 30) {
                 elements.soilBar.style.backgroundColor = 'var(--danger)';
