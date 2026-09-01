@@ -144,11 +144,41 @@
 
                 <div class="panel-card">
                     <div class="panel-header">
+                        <div class="panel-title">Humidity History (%)</div>
+                        <span class="badge badge-inactive" style="background: transparent; color: var(--text-muted);">Last 7 Days <i class="ph-bold ph-caret-down"></i></span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="mainHumChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="panel-header">
                         <div class="panel-title">Soil Moisture History (%)</div>
                         <span class="badge badge-inactive" style="background: transparent; color: var(--text-muted);">Last 7 Days <i class="ph-bold ph-caret-down"></i></span>
                     </div>
                     <div class="chart-wrapper">
                         <canvas id="mainSoilChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <div class="panel-title">Brightness History (%)</div>
+                        <span class="badge badge-inactive" style="background: transparent; color: var(--text-muted);">Last 7 Days <i class="ph-bold ph-caret-down"></i></span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="mainLightChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <div class="panel-title">Water Level History (%)</div>
+                        <span class="badge badge-inactive" style="background: transparent; color: var(--text-muted);">Last 7 Days <i class="ph-bold ph-caret-down"></i></span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="mainWaterChart"></canvas>
                     </div>
                 </div>
 
@@ -214,6 +244,15 @@
                                 <div class="alert-time">09:50 AM</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="panel-card" style="max-height: 350px; overflow-y: auto;">
+                    <div class="panel-header">
+                        <div class="panel-title">Pump Event History</div>
+                    </div>
+                    <div class="alerts-list" id="pump-history-list" style="flex-direction: column; gap: 0.75rem;">
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Loading history...</div>
                     </div>
                 </div>
             </section>
@@ -297,11 +336,67 @@
         options: mainChartOptions
     });
 
+    const mainHumChart = new Chart(document.getElementById('mainHumChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: [], datasets: [{ data: [], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4 }] },
+        options: mainChartOptions
+    });
+
     const mainSoilChart = new Chart(document.getElementById('mainSoilChart').getContext('2d'), {
         type: 'bar',
         data: { labels: [], datasets: [{ data: [], backgroundColor: '#3b82f6', borderRadius: 4 }] },
         options: mainChartOptions
     });
+
+    const mainLightChart = new Chart(document.getElementById('mainLightChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: [], datasets: [{ data: [], borderColor: '#eab308', backgroundColor: 'rgba(234, 179, 8, 0.1)', fill: true, tension: 0.4 }] },
+        options: mainChartOptions
+    });
+
+    const mainWaterChart = new Chart(document.getElementById('mainWaterChart').getContext('2d'), {
+        type: 'bar',
+        data: { labels: [], datasets: [{ data: [], backgroundColor: '#0ea5e9', borderRadius: 4 }] },
+        options: mainChartOptions
+    });
+
+    async function fetchPumpHistory() {
+        try {
+            const res = await fetch('/api/pump-history');
+            if (!res.ok) return;
+            const events = await res.json();
+            
+            const list = document.getElementById('pump-history-list');
+            if (!list) return;
+            
+            if (events.length === 0) {
+                list.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem;">No pump events recorded yet.</div>';
+                return;
+            }
+            
+            let html = '';
+            events.forEach(ev => {
+                const d = new Date(ev.timestamp);
+                const timeStr = `${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
+                const isOn = ev.state === 'ON';
+                const icon = isOn ? '<i class="ph-bold ph-power"></i>' : '<i class="ph-bold ph-power"></i>';
+                const colorClass = isOn ? 'success' : 'warning';
+                
+                html += `
+                    <div class="alert-item" style="padding: 0.75rem; min-width: 100%;">
+                        <div class="alert-icon ${colorClass}" style="width: 24px; height: 24px; font-size: 0.9rem;">${icon}</div>
+                        <div class="alert-text">
+                            <div class="alert-msg">Pump turned ${ev.state}</div>
+                            <div class="alert-time">${timeStr}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        } catch (e) {
+            console.error('Fetch pump history error:', e);
+        }
+    }
 
     async function fetchSensorData() {
         try {
@@ -313,6 +408,8 @@
             const resHist = await fetch('/api/history');
             const history = await resHist.json();
             updateCharts(history);
+
+            fetchPumpHistory();
         } catch (e) {
             console.error('Fetch error:', e);
         }
@@ -346,9 +443,21 @@
         mainTempChart.data.datasets[0].data = tData;
         mainTempChart.update();
 
+        mainHumChart.data.labels = labels;
+        mainHumChart.data.datasets[0].data = hData;
+        mainHumChart.update();
+
         mainSoilChart.data.labels = labels;
         mainSoilChart.data.datasets[0].data = sData;
         mainSoilChart.update();
+
+        mainLightChart.data.labels = labels;
+        mainLightChart.data.datasets[0].data = lData;
+        mainLightChart.update();
+
+        mainWaterChart.data.labels = labels;
+        mainWaterChart.data.datasets[0].data = wData;
+        mainWaterChart.update();
     }
 
     function updateDashboard(data) {

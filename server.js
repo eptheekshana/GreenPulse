@@ -1,8 +1,31 @@
 const express = require('express');
 const path = require('path');
+const https = require('https');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// SMS Configuration
+const SMS_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTc1NjMsImN1c3RvbWVyX3JvbGUiOjAsImlhdCI6MTc4ODI3OTU2NywiZXhwIjo0OTEyNDgxOTY3fQ.lll7nR_8V3Nvt4QKGUdpRgnvYaKw7jwld7zqmFGbR5w";
+const ALERT_PHONE_NUMBER = "94713167066"; // TODO: Replace with your actual phone number (e.g. 9477xxxxxxx)
+
+let smsSent = {
+    soilMoisture: false,
+    waterLevel: false
+};
+
+function sendSMS(message) {
+    console.log("Sending SMS Alert:", message);
+    const url = `https://richcommunication.dialog.lk/api/sms/inline/send.php?destination=${ALERT_PHONE_NUMBER}&q=${SMS_KEY}&message=${encodeURIComponent(message)}`;
+
+    https.get(url, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => console.log('Dialog eSMS Response:', data));
+    }).on('error', err => {
+        console.error('Dialog eSMS Error:', err.message);
+    });
+}
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -49,23 +72,23 @@ app.get('/dashboard', (req, res) => {
 // API for ESP32 to push data
 app.post('/api/telemetry', (req, res) => {
     const data = req.body;
-    
+
     // ESP32 will send raw analog values, we convert to % here
     if (data.t !== undefined) state.temperature = data.t;
     if (data.h !== undefined) state.humidity = data.h;
-    
+
     if (data.soilRaw !== undefined) {
         // Assuming 4095 is dry, 0 is wet
         let percent = ((4095 - data.soilRaw) / 4095) * 100;
         state.soilMoisture = Math.max(0, Math.min(100, percent));
     }
-    
+
     if (data.lightRaw !== undefined) {
         // Assuming 4095 is dark, 0 is bright
         let percent = ((4095 - data.lightRaw) / 4095) * 100;
         state.light = Math.max(0, Math.min(100, percent));
     }
-    
+
     if (data.waterRaw !== undefined) {
         let percent = (data.waterRaw / 4095) * 100; // Depends on sensor type, assuming higher is more water
         state.waterLevel = Math.max(0, Math.min(100, percent));
@@ -84,7 +107,25 @@ app.post('/api/telemetry', (req, res) => {
         state.pumpActive = data.pumpActive;
     }
     if (data.autoMode !== undefined) state.autoMode = data.autoMode;
-    
+
+    // --- SMS ALERT LOGIC ---
+    // Alert if Soil Moisture is below 30%
+    if (state.soilMoisture < 30 && !smsSent.soilMoisture) {
+        sendSMS(`GreenPulse ALERT: Soil moisture is critically low (${Math.round(state.soilMoisture)}%).`);
+        smsSent.soilMoisture = true;
+    } else if (state.soilMoisture >= 35) {
+        smsSent.soilMoisture = false; // Reset alert when it goes back up
+    }
+
+    // Alert if Water Level is below 20%
+    if (state.waterLevel < 20 && !smsSent.waterLevel) {
+        sendSMS(`GreenPulse ALERT: Water tank level is low (${Math.round(state.waterLevel)}%). Please refill.`);
+        smsSent.waterLevel = true;
+    } else if (state.waterLevel >= 25) {
+        smsSent.waterLevel = false; // Reset alert
+    }
+    // -----------------------
+
     // Save to history array with current timestamp
     history.push({
         timestamp: new Date().toISOString(),
@@ -100,7 +141,7 @@ app.post('/api/telemetry', (req, res) => {
 
     // Send pending commands back to ESP32
     res.json(pendingCommands);
-    
+
     // Clear commands after sending
     pendingCommands.pumpState = null;
     pendingCommands.autoMode = null;
@@ -130,7 +171,7 @@ app.post('/api/command', (req, res) => {
             return res.status(401).json({ success: false, error: "Invalid PIN" });
         }
     }
-    
+
     if (req.body.pumpState) pendingCommands.pumpState = req.body.pumpState;
     if (req.body.autoMode !== undefined) pendingCommands.autoMode = req.body.autoMode;
     res.json({ success: true });
