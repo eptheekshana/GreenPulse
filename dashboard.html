@@ -107,6 +107,18 @@
 
                 <div class="stat-card">
                     <div class="stat-header">
+                        <div class="stat-icon blue" style="background-color: rgba(14, 165, 233, 0.15); color: #0ea5e9;"><i class="ph-bold ph-waves"></i></div>
+                        <div class="stat-title">Water Level</div>
+                    </div>
+                    <div class="stat-value"><span id="water-val">--</span> <span class="stat-unit">%</span></div>
+                    <div class="stat-footer">
+                        <span class="status-label normal"><i class="ph-fill ph-arrow-up"></i> Normal</span>
+                        <div class="sparkline-container"><canvas id="sparkWater"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
                         <div class="stat-icon purple"><i class="ph-bold ph-engine"></i></div>
                         <div class="stat-title">Pump Status</div>
                     </div>
@@ -230,6 +242,7 @@
         humVal: document.getElementById('hum-val'),
         soilVal: document.getElementById('soil-val'),
         lightVal: document.getElementById('light-val'),
+        waterVal: document.getElementById('water-val'),
         pumpStatus: document.getElementById('pump-status'),
         modeStatus: document.getElementById('mode-status'),
         btnModeAuto: document.getElementById('btn-mode-auto'),
@@ -265,6 +278,7 @@
     const sparkHum = createSparkline(document.getElementById('sparkHum').getContext('2d'), '#3b82f6');
     const sparkSoil = createSparkline(document.getElementById('sparkSoil').getContext('2d'), '#22c55e');
     const sparkLight = createSparkline(document.getElementById('sparkLight').getContext('2d'), '#eab308');
+    const sparkWater = createSparkline(document.getElementById('sparkWater').getContext('2d'), '#0ea5e9');
     const sparkPump = createSparkline(document.getElementById('sparkPump').getContext('2d'), '#a855f7');
 
     const mainChartOptions = {
@@ -306,7 +320,7 @@
 
     function updateCharts(history) {
         const labels = [];
-        const tData = [], hData = [], sData = [], lData = [], pData = [];
+        const tData = [], hData = [], sData = [], lData = [], wData = [], pData = [];
         
         history.forEach(pt => {
             const d = new Date(pt.timestamp);
@@ -315,6 +329,7 @@
             hData.push(pt.humidity);
             sData.push(pt.soilMoisture);
             lData.push(pt.light);
+            wData.push(pt.waterLevel);
             // pump status history is tricky, just use dummy data for sparkline for now
             pData.push(Math.random() * 10); 
         });
@@ -324,7 +339,8 @@
         sparkHum.data.datasets[0].data = hData.slice(-10); sparkHum.update();
         sparkSoil.data.datasets[0].data = sData.slice(-10); sparkSoil.update();
         sparkLight.data.datasets[0].data = lData.slice(-10); sparkLight.update();
-        sparkPump.data.datasets[0].data = pData; sparkPump.update();
+        sparkWater.data.datasets[0].data = wData.slice(-10); sparkWater.update();
+        sparkPump.data.datasets[0].data = pData.slice(-10); sparkPump.update();
 
         mainTempChart.data.labels = labels;
         mainTempChart.data.datasets[0].data = tData;
@@ -340,6 +356,7 @@
         elements.humVal.innerText = Math.round(data.humidity);
         elements.soilVal.innerText = Math.round(data.soilMoisture);
         elements.lightVal.innerText = Math.round(data.light);
+        elements.waterVal.innerText = Math.round(data.waterLevel);
 
         if (!uiLock) {
             if (data.pumpActive) {
