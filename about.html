@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | GreenPulse</title>
+    <link rel="stylesheet" href="style.css?v=2.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="/" class="brand">
+            <i class="ph-fill ph-leaf brand-icon"></i>
+            <span class="brand-text">GreenPulse</span>
+        </a>
+        <ul class="nav-menu">
+            <li><a href="/dashboard" class="nav-item"><i class="ph-fill ph-house"></i> Dashboard</a></li>
+            <li><a href="/monitoring" class="nav-item"><i class="ph-bold ph-chart-line-up"></i> Monitoring</a></li>
+            <li><a href="/analytics" class="nav-item"><i class="ph-bold ph-chart-bar"></i> Analytics</a></li>
+            <li><a href="/control-panel" class="nav-item"><i class="ph-bold ph-gear"></i> Control Panel</a></li>
+            <li><a href="/alerts" class="nav-item"><i class="ph-bold ph-bell"></i> Alerts</a></li>
+            <li style="margin-top: 2rem;"><a href="/about" class="nav-item active"><i class="ph-bold ph-info"></i> About Project</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle"><i class="ph-bold ph-list"></i></button>
+            </div>
+            <div class="topbar-right">
+                <div><i class="ph-bold ph-calendar-blank"></i> <span id="current-date">May 25, 2025</span></div>
+                <div><i class="ph-bold ph-clock"></i> <span id="current-time">10:30:45 AM</span></div>
+                <div style="position: relative; margin-left: 1rem;">
+                    <i class="ph-bold ph-bell" style="font-size: 1.25rem;"></i>
+                    <span style="position: absolute; top: -5px; right: -5px; background: var(--accent-green); color: black; font-size: 0.6rem; font-weight: bold; padding: 2px 5px; border-radius: 50%;">2</span>
+                </div>
+                <div class="user-profile"></div>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Hero -->
+            <section class="hero-banner">
+                <h4>Welcome to</h4>
+                <h1>GreenPulse</h1>
+                <h3 style="color: #fff; margin-bottom: 0.5rem;">Smart Greenhouse Monitoring System</h3>
+                <p>Monitor your greenhouse environment in real-time and automate irrigation for healthy plants.</p>
+            </section>
+
+            <!-- About Section -->
+            <section class="panel-card" style="margin-bottom: 2rem;">
+                <div class="panel-header">
+                    <div class="panel-title">About GreenPulse</div>
+                </div>
+                <div style="color: var(--text-muted); line-height: 1.6;">
+                    <p>GreenPulse is an open-source, edge-computing powered irrigation and monitoring system. It continuously reads environmental sensors and automatically controls water pumps based on precise soil saturation levels.</p>
+                    <br>
+                    <h4 style="color: var(--text-main); margin-bottom: 0.5rem;">Hardware Components</h4>
+                    <ul>
+                        <li><strong>ESP32 Microcontroller:</strong> The main processing unit providing dual-core performance.</li>
+                        <li><strong>DHT11 Sensor:</strong> Ambient temperature and relative humidity.</li>
+                        <li><strong>LDR Sensor:</strong> Photoresistor module tracking light intensity.</li>
+                        <li><strong>Soil & Water Sensors:</strong> Analog resistive sensors mapping precise saturation percentages.</li>
+                        <li><strong>Relay Module:</strong> Electrically isolates the low-voltage ESP32 from the high-power water pump circuit.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 1rem;">
+                &copy; 2026 GreenPulse Smart Greenhouse System | All Rights Reserved
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Time updating
+    function updateDateTime() {
+        const now = new Date();
+        const dateOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+        const timeOptions = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+        document.getElementById('current-date').innerText = now.toLocaleDateString('en-US', dateOptions);
+        document.getElementById('current-time').innerText = now.toLocaleTimeString('en-US', timeOptions);
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+</script>
+</body>
+</html>

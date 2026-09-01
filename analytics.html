@@ -19,9 +19,9 @@
             <span class="brand-text">GreenPulse</span>
         </a>
         <ul class="nav-menu">
-            <li><a href="/dashboard" class="nav-item active"><i class="ph-fill ph-house"></i> Dashboard</a></li>
+            <li><a href="/dashboard" class="nav-item"><i class="ph-fill ph-house"></i> Dashboard</a></li>
             <li><a href="/monitoring" class="nav-item"><i class="ph-bold ph-chart-line-up"></i> Monitoring</a></li>
-            <li><a href="/analytics" class="nav-item"><i class="ph-bold ph-chart-bar"></i> Analytics</a></li>
+            <li><a href="/analytics" class="nav-item active"><i class="ph-bold ph-chart-bar"></i> Analytics</a></li>
             <li><a href="/control-panel" class="nav-item"><i class="ph-bold ph-gear"></i> Control Panel</a></li>
             <li><a href="/alerts" class="nav-item"><i class="ph-bold ph-bell"></i> Alerts</a></li>
             <li style="margin-top: 2rem;"><a href="/about" class="nav-item"><i class="ph-bold ph-info"></i> About Project</a></li>
@@ -53,81 +53,6 @@
                 <h1>GreenPulse</h1>
                 <h3 style="color: #fff; margin-bottom: 0.5rem;">Smart Greenhouse Monitoring System</h3>
                 <p>Monitor your greenhouse environment in real-time and automate irrigation for healthy plants.</p>
-            </section>
-
-            <!-- Stats Row -->
-            <section class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon green"><i class="ph-bold ph-thermometer"></i></div>
-                        <div class="stat-title">Temperature</div>
-                    </div>
-                    <div class="stat-value"><span id="temp-val">--</span> <span class="stat-unit">°C</span></div>
-                    <div class="stat-footer">
-                        <span class="status-label normal"><i class="ph-fill ph-arrow-up"></i> Normal</span>
-                        <div class="sparkline-container"><canvas id="sparkTemp"></canvas></div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon blue"><i class="ph-bold ph-drop"></i></div>
-                        <div class="stat-title">Humidity</div>
-                    </div>
-                    <div class="stat-value"><span id="hum-val">--</span> <span class="stat-unit">%</span></div>
-                    <div class="stat-footer">
-                        <span class="status-label normal"><i class="ph-fill ph-arrow-up"></i> Normal</span>
-                        <div class="sparkline-container"><canvas id="sparkHum"></canvas></div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon green"><i class="ph-bold ph-plant"></i></div>
-                        <div class="stat-title">Soil Moisture</div>
-                    </div>
-                    <div class="stat-value"><span id="soil-val">--</span> <span class="stat-unit">%</span></div>
-                    <div class="stat-footer">
-                        <span class="status-label normal"><i class="ph-fill ph-arrow-up"></i> Normal</span>
-                        <div class="sparkline-container"><canvas id="sparkSoil"></canvas></div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon yellow"><i class="ph-bold ph-sun"></i></div>
-                        <div class="stat-title">Brightness</div>
-                    </div>
-                    <div class="stat-value"><span id="light-val">--</span> <span class="stat-unit">%</span></div>
-                    <div class="stat-footer">
-                        <span class="status-label normal"><i class="ph-fill ph-arrow-up"></i> Normal</span>
-                        <div class="sparkline-container"><canvas id="sparkLight"></canvas></div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon blue" style="background-color: rgba(14, 165, 233, 0.15); color: #0ea5e9;"><i class="ph-bold ph-waves"></i></div>
-                        <div class="stat-title">Water Level</div>
-                    </div>
-                    <div class="stat-value"><span id="water-val">--</span> <span class="stat-unit">%</span></div>
-                    <div class="stat-footer">
-                        <span class="status-label normal"><i class="ph-fill ph-arrow-up"></i> Normal</span>
-                        <div class="sparkline-container"><canvas id="sparkWater"></canvas></div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon purple"><i class="ph-bold ph-engine"></i></div>
-                        <div class="stat-title">Pump Status</div>
-                    </div>
-                    <div class="stat-value" id="pump-status" style="color: var(--accent-green);">ON</div>
-                    <div class="stat-footer">
-                        <span class="status-label normal"><i class="ph-fill ph-caret-right"></i> Running</span>
-                        <div class="sparkline-container"><canvas id="sparkPump"></canvas></div>
-                    </div>
-                </div>
             </section>
 
             <!-- Charts Row -->
@@ -181,80 +106,6 @@
                         <canvas id="mainWaterChart"></canvas>
                     </div>
                 </div>
-
-                <div class="panel-card">
-                    <div class="panel-header">
-                        <div class="panel-title">Control Panel</div>
-                    </div>
-                    
-                    <div class="control-group">
-                        <span class="control-label">Mode</span>
-                        <span class="control-value" id="mode-status">Auto Mode</span>
-                    </div>
-
-                    <div class="control-group">
-                        <span class="control-label">Moisture Threshold</span>
-                        <span class="control-value">40 %</span>
-                    </div>
-                    <input type="range" min="0" max="100" value="40" class="mb-1">
-
-                    <div class="btn-group mt-1">
-                        <button class="btn btn-outline-green" id="btn-mode-auto" onclick="setMode(true)">Auto</button>
-                        <button class="btn btn-outline-green" id="btn-mode-manual" style="border-color: var(--text-muted); color: var(--text-muted);" onclick="setMode(false)">Manual</button>
-                    </div>
-
-                    <div class="btn-group">
-                        <button class="btn btn-outline-green" id="btn-pump-on" onclick="setPump('on')"><i class="ph-bold ph-power"></i> Turn Pump ON</button>
-                        <button class="btn btn-danger" id="btn-pump-off" onclick="setPump('off')"><i class="ph-bold ph-power"></i> Turn Pump OFF</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Bottom Row -->
-            <section class="bottom-grid">
-                <div class="panel-card status-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;">
-                    <div class="panel-title" style="color: var(--accent-green); align-self: flex-start; margin-bottom: 0;">System Status</div>
-                    <div style="align-self: flex-start; margin-bottom: 1rem;"><span class="status-indicator-dot"></span> All Systems Normal</div>
-                    <i class="ph-thin ph-greenhouse" style="font-size: 6rem; color: var(--accent-green);"></i>
-                </div>
-
-                <div class="panel-card">
-                    <div class="panel-header">
-                        <div class="panel-title">Recent Alerts</div>
-                    </div>
-                    <div class="alerts-list">
-                        <div class="alert-item">
-                            <div class="alert-icon success"><i class="ph-bold ph-check"></i></div>
-                            <div class="alert-text">
-                                <div class="alert-msg">System is running normally</div>
-                                <div class="alert-time">Just now</div>
-                            </div>
-                        </div>
-                        <div class="alert-item">
-                            <div class="alert-icon warning"><i class="ph-bold ph-warning"></i></div>
-                            <div class="alert-text">
-                                <div class="alert-msg" id="alert-message">Soil moisture is low</div>
-                                <div class="alert-time">10:15 AM</div>
-                            </div>
-                        </div>
-                        <div class="alert-item">
-                            <div class="alert-icon success"><i class="ph-bold ph-check"></i></div>
-                            <div class="alert-text">
-                                <div class="alert-msg">Irrigation completed</div>
-                                <div class="alert-time">09:50 AM</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel-card" style="max-height: 350px; overflow-y: auto;">
-                    <div class="panel-header">
-                        <div class="panel-title">Pump Event History</div>
-                    </div>
-                    <div class="alerts-list" id="pump-history-list" style="flex-direction: column; gap: 0.75rem;">
-                        <div style="color: var(--text-muted); font-size: 0.9rem;">Loading history...</div>
-                    </div>
-                </div>
             </section>
 
             <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 1rem;">
@@ -298,27 +149,6 @@
     // Charts Setup
     Chart.defaults.color = '#94a3b8';
     Chart.defaults.font.family = 'Inter';
-
-    const sparkOptions = {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { enabled: false } },
-        scales: { x: { display: false }, y: { display: false } },
-        elements: { point: { radius: 0 } },
-        animation: { duration: 0 }
-    };
-
-    const createSparkline = (ctx, color) => new Chart(ctx, {
-        type: 'line',
-        data: { labels: Array(10).fill(''), datasets: [{ data: Array(10).fill(0), borderColor: color, tension: 0.4, borderWidth: 2 }] },
-        options: sparkOptions
-    });
-
-    const sparkTemp = createSparkline(document.getElementById('sparkTemp').getContext('2d'), '#22c55e');
-    const sparkHum = createSparkline(document.getElementById('sparkHum').getContext('2d'), '#3b82f6');
-    const sparkSoil = createSparkline(document.getElementById('sparkSoil').getContext('2d'), '#22c55e');
-    const sparkLight = createSparkline(document.getElementById('sparkLight').getContext('2d'), '#eab308');
-    const sparkWater = createSparkline(document.getElementById('sparkWater').getContext('2d'), '#0ea5e9');
-    const sparkPump = createSparkline(document.getElementById('sparkPump').getContext('2d'), '#a855f7');
 
     const mainChartOptions = {
         responsive: true, maintainAspectRatio: false,
@@ -432,12 +262,6 @@
         });
 
         const sl = labels.slice(-10);
-        sparkTemp.data.datasets[0].data = tData.slice(-10); sparkTemp.update();
-        sparkHum.data.datasets[0].data = hData.slice(-10); sparkHum.update();
-        sparkSoil.data.datasets[0].data = sData.slice(-10); sparkSoil.update();
-        sparkLight.data.datasets[0].data = lData.slice(-10); sparkLight.update();
-        sparkWater.data.datasets[0].data = wData.slice(-10); sparkWater.update();
-        sparkPump.data.datasets[0].data = pData.slice(-10); sparkPump.update();
 
         mainTempChart.data.labels = labels;
         mainTempChart.data.datasets[0].data = tData;
@@ -460,14 +284,7 @@
         mainWaterChart.update();
     }
 
-    function updateDashboard(data) {
-        elements.tempVal.innerText = data.temperature.toFixed(1);
-        elements.humVal.innerText = Math.round(data.humidity);
-        elements.soilVal.innerText = Math.round(data.soilMoisture);
-        elements.lightVal.innerText = Math.round(data.light);
-        elements.waterVal.innerText = Math.round(data.waterLevel);
-
-        if (!uiLock) {
+    function updateDashboard(data) {if (!uiLock) {
             if (data.pumpActive) {
                 elements.pumpStatus.innerText = "ON";
                 elements.pumpStatus.style.color = "var(--accent-green)";
@@ -494,8 +311,6 @@
                 elements.btnPumpOff.disabled = false;
             }
         }
-
-        if (data.alert) elements.alertMessage.innerText = data.alert;
     }
 
     async function sendCommand(payload) {

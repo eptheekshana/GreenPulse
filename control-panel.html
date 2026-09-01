@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | GreenPulse</title>
+    <link rel="stylesheet" href="style.css?v=2.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="/" class="brand">
+            <i class="ph-fill ph-leaf brand-icon"></i>
+            <span class="brand-text">GreenPulse</span>
+        </a>
+        <ul class="nav-menu">
+            <li><a href="/dashboard" class="nav-item"><i class="ph-fill ph-house"></i> Dashboard</a></li>
+            <li><a href="/monitoring" class="nav-item"><i class="ph-bold ph-chart-line-up"></i> Monitoring</a></li>
+            <li><a href="/analytics" class="nav-item"><i class="ph-bold ph-chart-bar"></i> Analytics</a></li>
+            <li><a href="/control-panel" class="nav-item active"><i class="ph-bold ph-gear"></i> Control Panel</a></li>
+            <li><a href="/alerts" class="nav-item"><i class="ph-bold ph-bell"></i> Alerts</a></li>
+            <li style="margin-top: 2rem;"><a href="/about" class="nav-item"><i class="ph-bold ph-info"></i> About Project</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle"><i class="ph-bold ph-list"></i></button>
+            </div>
+            <div class="topbar-right">
+                <div><i class="ph-bold ph-calendar-blank"></i> <span id="current-date">May 25, 2025</span></div>
+                <div><i class="ph-bold ph-clock"></i> <span id="current-time">10:30:45 AM</span></div>
+                <div style="position: relative; margin-left: 1rem;">
+                    <i class="ph-bold ph-bell" style="font-size: 1.25rem;"></i>
+                    <span style="position: absolute; top: -5px; right: -5px; background: var(--accent-green); color: black; font-size: 0.6rem; font-weight: bold; padding: 2px 5px; border-radius: 50%;">2</span>
+                </div>
+                <div class="user-profile"></div>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Hero -->
+            <section class="hero-banner">
+                <h4>Welcome to</h4>
+                <h1>GreenPulse</h1>
+                <h3 style="color: #fff; margin-bottom: 0.5rem;">Smart Greenhouse Monitoring System</h3>
+                <p>Monitor your greenhouse environment in real-time and automate irrigation for healthy plants.</p>
+            </section>
+            <!-- Control Panel Section -->
+            <section class="charts-grid" style="grid-template-columns: 1fr;">
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <div class="panel-title">Control Panel</div>
+                    </div>
+                    <div class="control-group">
+                        <span class="control-label">Mode</span>
+                        <span class="control-value" id="mode-status">Auto Mode</span>
+                    </div>
+                    <div class="control-group">
+                        <span class="control-label">Moisture Threshold</span>
+                        <span class="control-value">40 %</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="40" class="mb-1">
+                    <div class="btn-group mt-1">
+                        <button class="btn btn-outline-green" id="btn-mode-auto" onclick="setMode(true)">Auto</button>
+                        <button class="btn btn-outline-green" id="btn-mode-manual" style="border-color: var(--text-muted); color: var(--text-muted);" onclick="setMode(false)">Manual</button>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-green" id="btn-pump-on" onclick="setPump('on')"><i class="ph-bold ph-power"></i> Turn Pump ON</button>
+                        <button class="btn btn-danger" id="btn-pump-off" onclick="setPump('off')"><i class="ph-bold ph-power"></i> Turn Pump OFF</button>
+                    </div>
+                </div>
+            </section>
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 1rem;">
+                &copy; 2026 GreenPulse Smart Greenhouse System | All Rights Reserved
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Time updating
+    function updateDateTime() {
+        const now = new Date();
+        const dateOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+        const timeOptions = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+        document.getElementById('current-date').innerText = now.toLocaleDateString('en-US', dateOptions);
+        document.getElementById('current-time').innerText = now.toLocaleTimeString('en-US', timeOptions);
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    const elements = {
+        tempVal: document.getElementById('temp-val'),
+        humVal: document.getElementById('hum-val'),
+        soilVal: document.getElementById('soil-val'),
+        lightVal: document.getElementById('light-val'),
+        waterVal: document.getElementById('water-val'),
+        pumpStatus: document.getElementById('pump-status'),
+        modeStatus: document.getElementById('mode-status'),
+        btnModeAuto: document.getElementById('btn-mode-auto'),
+        btnModeManual: document.getElementById('btn-mode-manual'),
+        btnPumpOn: document.getElementById('btn-pump-on'),
+        btnPumpOff: document.getElementById('btn-pump-off'),
+        alertMessage: document.getElementById('alert-message')
+    };
+
+    let uiLock = false;
+    let uiLockTimeout = null;
+    const UPDATE_INTERVAL = 2000;
+
+    // Charts Setup
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.font.family = 'Inter';
+
+    async function fetchPumpHistory() {
+        try {
+            const res = await fetch('/api/pump-history');
+            if (!res.ok) return;
+            const events = await res.json();
+            
+            const list = document.getElementById('pump-history-list');
+            if (!list) return;
+            
+            if (events.length === 0) {
+                list.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem;">No pump events recorded yet.</div>';
+                return;
+            }
+            
+            let html = '';
+            events.forEach(ev => {
+                const d = new Date(ev.timestamp);
+                const timeStr = `${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
+                const isOn = ev.state === 'ON';
+                const icon = isOn ? '<i class="ph-bold ph-power"></i>' : '<i class="ph-bold ph-power"></i>';
+                const colorClass = isOn ? 'success' : 'warning';
+                
+                html += `
+                    <div class="alert-item" style="padding: 0.75rem; min-width: 100%;">
+                        <div class="alert-icon ${colorClass}" style="width: 24px; height: 24px; font-size: 0.9rem;">${icon}</div>
+                        <div class="alert-text">
+                            <div class="alert-msg">Pump turned ${ev.state}</div>
+                            <div class="alert-time">${timeStr}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        } catch (e) {
+            console.error('Fetch pump history error:', e);
+        }
+    }
+
+    async function fetchSensorData() {
+        try {
+            const resData = await fetch('/api/data');
+            if (!resData.ok) return;
+            const data = await resData.json();
+            updateDashboard(data);
+
+            fetchPumpHistory();
+        } catch (e) {
+            console.error('Fetch error:', e);
+        }
+    }
+
+    function updateCharts(history) {
+        const labels = [];
+        const tData = [], hData = [], sData = [], lData = [], wData = [], pData = [];
+        
+        history.forEach(pt => {
+            const d = new Date(pt.timestamp);
+            labels.push(`${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`);
+            tData.push(pt.temperature);
+            hData.push(pt.humidity);
+            sData.push(pt.soilMoisture);
+            lData.push(pt.light);
+            wData.push(pt.waterLevel);
+            // pump status history is tricky, just use dummy data for sparkline for now
+            pData.push(Math.random() * 10); 
+        });
+
+        const sl = labels.slice(-10);
+        sparkTemp.data.datasets[0].data = tData.slice(-10); sparkTemp.update();
+        sparkHum.data.datasets[0].data = hData.slice(-10); sparkHum.update();
+        sparkSoil.data.datasets[0].data = sData.slice(-10); sparkSoil.update();
+        sparkLight.data.datasets[0].data = lData.slice(-10); sparkLight.update();
+        sparkWater.data.datasets[0].data = wData.slice(-10); sparkWater.update();
+        sparkPump.data.datasets[0].data = pData.slice(-10); sparkPump.update();
+
+        mainTempChart.data.labels = labels;
+        mainTempChart.data.datasets[0].data = tData;
+        mainTempChart.update();
+
+        mainHumChart.data.labels = labels;
+        mainHumChart.data.datasets[0].data = hData;
+        mainHumChart.update();
+
+        mainSoilChart.data.labels = labels;
+        mainSoilChart.data.datasets[0].data = sData;
+        mainSoilChart.update();
+
+        mainLightChart.data.labels = labels;
+        mainLightChart.data.datasets[0].data = lData;
+        mainLightChart.update();
+
+        mainWaterChart.data.labels = labels;
+        mainWaterChart.data.datasets[0].data = wData;
+        mainWaterChart.update();
+    }
+
+    function updateDashboard(data) {if (!uiLock) {
+            if (data.pumpActive) {
+                elements.pumpStatus.innerText = "ON";
+                elements.pumpStatus.style.color = "var(--accent-green)";
+            } else {
+                elements.pumpStatus.innerText = "OFF";
+                elements.pumpStatus.style.color = "var(--danger)";
+            }
+            
+            if (data.autoMode) {
+                elements.modeStatus.innerText = "Auto Mode";
+                elements.btnModeAuto.style.borderColor = "var(--accent-green)";
+                elements.btnModeAuto.style.color = "var(--accent-green)";
+                elements.btnModeManual.style.borderColor = "var(--text-muted)";
+                elements.btnModeManual.style.color = "var(--text-muted)";
+                elements.btnPumpOn.disabled = true;
+                elements.btnPumpOff.disabled = true;
+            } else {
+                elements.modeStatus.innerText = "Manual Mode";
+                elements.btnModeManual.style.borderColor = "var(--accent-green)";
+                elements.btnModeManual.style.color = "var(--accent-green)";
+                elements.btnModeAuto.style.borderColor = "var(--text-muted)";
+                elements.btnModeAuto.style.color = "var(--text-muted)";
+                elements.btnPumpOn.disabled = false;
+                elements.btnPumpOff.disabled = false;
+            }
+        }
+    }
+
+    async function sendCommand(payload) {
+        try {
+            const response = await fetch('/api/command', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) {
+                const data = await response.json();
+                alert(data.error || 'Command failed');
+                return false;
+            }
+            return true;
+        } catch (e) {
+            alert('Network error');
+            return false;
+        }
+    }
+
+    function applyUiLock() {
+        uiLock = true;
+        if (uiLockTimeout) clearTimeout(uiLockTimeout);
+        uiLockTimeout = setTimeout(() => { uiLock = false; }, 4000);
+    }
+
+    async function setPump(state) {
+        let pin = null;
+        if (state === 'on') {
+            pin = prompt("Enter PIN to turn on the pump:");
+            if (pin === null) return;
+        }
+        
+        const success = await sendCommand({ pumpState: state, pin: pin });
+        if (success) {
+            applyUiLock();
+            elements.pumpStatus.innerText = state === 'on' ? "ON" : "OFF";
+            elements.pumpStatus.style.color = state === 'on' ? "var(--accent-green)" : "var(--danger)";
+        }
+    }
+
+    function setMode(isAuto) {
+        applyUiLock();
+        elements.modeStatus.innerText = isAuto ? "Auto Mode" : "Manual Mode";
+        if (isAuto) {
+            elements.btnModeAuto.style.borderColor = "var(--accent-green)";
+            elements.btnModeAuto.style.color = "var(--accent-green)";
+            elements.btnModeManual.style.borderColor = "var(--text-muted)";
+            elements.btnModeManual.style.color = "var(--text-muted)";
+            elements.btnPumpOn.disabled = true;
+            elements.btnPumpOff.disabled = true;
+        } else {
+            elements.btnModeManual.style.borderColor = "var(--accent-green)";
+            elements.btnModeManual.style.color = "var(--accent-green)";
+            elements.btnModeAuto.style.borderColor = "var(--text-muted)";
+            elements.btnModeAuto.style.color = "var(--text-muted)";
+            elements.btnPumpOn.disabled = false;
+            elements.btnPumpOff.disabled = false;
+        }
+        sendCommand({ autoMode: isAuto });
+    }
+
+    fetchSensorData();
+    setInterval(fetchSensorData, UPDATE_INTERVAL);
+</script>
+</body>
+</html>

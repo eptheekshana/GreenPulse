@@ -64,9 +64,29 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Serve the dashboard
+// Serve the dashboard and other pages
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'dashboard.html'));
+});
+
+app.get('/monitoring', (req, res) => {
+    res.sendFile(path.join(__dirname, 'monitoring.html'));
+});
+
+app.get('/analytics', (req, res) => {
+    res.sendFile(path.join(__dirname, 'analytics.html'));
+});
+
+app.get('/control-panel', (req, res) => {
+    res.sendFile(path.join(__dirname, 'control-panel.html'));
+});
+
+app.get('/alerts', (req, res) => {
+    res.sendFile(path.join(__dirname, 'alerts.html'));
+});
+
+app.get('/about', (req, res) => {
+    res.sendFile(path.join(__dirname, 'about.html'));
 });
 
 // API for ESP32 to push data
