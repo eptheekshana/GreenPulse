@@ -116,6 +116,10 @@ app.post('/api/telemetry', (req, res) => {
 
     if (data.pumpActive !== undefined) {
         if (state.pumpActive !== data.pumpActive) {
+            if (data.pumpActive === true) {
+                sendSMS(`GreenPulse NOTIFICATION: Water pump has been turned ON.`);
+            }
+            
             pumpEvents.unshift({
                 timestamp: new Date().toISOString(),
                 state: data.pumpActive ? "ON" : "OFF"

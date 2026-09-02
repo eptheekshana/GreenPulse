@@ -469,3 +469,32 @@ input[type=range]::-webkit-slider-thumb {
 /* Utility */
 .mb-1 { margin-bottom: 0.5rem; }
 .mt-1 { margin-top: 1rem; }
+
+/* Notification Dropdown Styles */
+.notifications-dropdown {
+    position: absolute;
+    top: 40px;
+    right: -10px;
+    width: 320px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+}
+.notifications-dropdown.show {
+    display: flex;
+}
+.notifications-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+.notifications-body {
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}

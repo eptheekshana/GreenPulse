@@ -39,8 +39,16 @@
                 <div><i class="ph-bold ph-calendar-blank"></i> <span id="current-date">May 25, 2025</span></div>
                 <div><i class="ph-bold ph-clock"></i> <span id="current-time">10:30:45 AM</span></div>
                 <div style="position: relative; margin-left: 1rem;">
-                    <i class="ph-bold ph-bell" style="font-size: 1.25rem;"></i>
-                    <span style="position: absolute; top: -5px; right: -5px; background: var(--accent-green); color: black; font-size: 0.6rem; font-weight: bold; padding: 2px 5px; border-radius: 50%;">2</span>
+                    <button id="notif-btn" style="background:none; border:none; color:inherit; cursor:pointer; position:relative; display:flex; align-items:center;">
+                        <i class="ph-bold ph-bell" style="font-size: 1.25rem;"></i>
+                        <span id="notif-badge" style="position: absolute; top: -5px; right: -5px; background: var(--accent-green); color: black; font-size: 0.6rem; font-weight: bold; padding: 2px 5px; border-radius: 50%;">0</span>
+                    </button>
+                    <div id="notif-dropdown" class="notifications-dropdown">
+                        <div class="notifications-header">Recent Notifications</div>
+                        <div class="notifications-body" id="notif-list">
+                            <div style="text-align:center; padding:1rem; color:var(--text-muted); font-size:0.9rem;">Loading notifications...</div>
+                        </div>
+                    </div>
                 </div>
                 <div class="user-profile"></div>
             </div>
@@ -93,5 +101,6 @@
     setInterval(updateDateTime, 1000);
     updateDateTime();
 </script>
+<script src="notifications.js"></script>
 </body>
 </html>
