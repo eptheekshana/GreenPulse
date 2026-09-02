@@ -301,4 +301,11 @@ h1, h2, h3, h4 {
     .step-arrow {
         transform: rotate(90deg);
     }
+    .nav-links {
+        display: none;
+    }
+    .btn-primary {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
 }

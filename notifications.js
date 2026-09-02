@@ -54,4 +54,21 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/api/pump-history').then(res => res.json()).then(events => {
         if(notifBadge) notifBadge.innerText = events.length;
     }).catch(e => {});
+
+    // Sidebar toggle logic
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    
+    if (menuToggle && sidebar) {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sidebar.classList.toggle('open');
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+    }
 });

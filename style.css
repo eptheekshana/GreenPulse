@@ -139,6 +139,7 @@ body {
     color: var(--text-muted);
     font-size: 1.5rem;
     cursor: pointer;
+    display: none;
 }
 
 .topbar-right {
@@ -497,4 +498,70 @@ input[type=range]::-webkit-slider-thumb {
     max-height: 350px;
     overflow-y: auto;
     padding: 0.5rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 1024px) {
+    .charts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .bottom-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: -260px;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 15px rgba(0,0,0,0.5);
+    }
+    
+    .sidebar.open {
+        left: 0;
+    }
+    
+    .menu-toggle {
+        display: block;
+    }
+    
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero-banner {
+        padding: 2rem 1.5rem;
+    }
+    
+    .hero-banner h1 {
+        font-size: 2.25rem;
+    }
+
+    .dashboard-content {
+        padding: 0 1rem 1rem 1rem;
+    }
+    
+    .topbar {
+        padding: 1rem;
+    }
+    
+    /* Hide calendar and time on mobile, keep notifications and profile */
+    .topbar-right > div:first-child,
+    .topbar-right > div:nth-child(2) {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
 }
