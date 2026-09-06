@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const https = require('https');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -45,12 +46,29 @@ let state = {
     alert: ""
 };
 
+const HISTORY_FILE = path.join(__dirname, 'history.json');
+const PUMP_HISTORY_FILE = path.join(__dirname, 'pump_history.json');
+
 // History array for the dashboard charts
 let history = [];
+if (fs.existsSync(HISTORY_FILE)) {
+    try {
+        history = JSON.parse(fs.readFileSync(HISTORY_FILE, 'utf8'));
+    } catch (e) {
+        console.error("Error reading history.json", e);
+    }
+}
 const HISTORY_LIMIT = 60; // Store last 60 points
 
 // Pump History
 let pumpEvents = [];
+if (fs.existsSync(PUMP_HISTORY_FILE)) {
+    try {
+        pumpEvents = JSON.parse(fs.readFileSync(PUMP_HISTORY_FILE, 'utf8'));
+    } catch (e) {
+        console.error("Error reading pump_history.json", e);
+    }
+}
 const PUMP_HISTORY_LIMIT = 50;
 
 // Command queue for the ESP32
@@ -127,6 +145,9 @@ app.post('/api/telemetry', (req, res) => {
             if (pumpEvents.length > PUMP_HISTORY_LIMIT) {
                 pumpEvents.pop();
             }
+            fs.writeFile(PUMP_HISTORY_FILE, JSON.stringify(pumpEvents), (err) => {
+                if (err) console.error("Error saving pump history:", err);
+            });
         }
         state.pumpActive = data.pumpActive;
     }
@@ -162,6 +183,9 @@ app.post('/api/telemetry', (req, res) => {
     if (history.length > HISTORY_LIMIT) {
         history.shift();
     }
+    fs.writeFile(HISTORY_FILE, JSON.stringify(history), (err) => {
+        if (err) console.error("Error saving history:", err);
+    });
 
     // Send pending commands back to ESP32
     res.json(pendingCommands);
