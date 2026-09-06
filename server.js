@@ -180,9 +180,6 @@ app.post('/api/telemetry', (req, res) => {
         light: state.light,
         waterLevel: state.waterLevel
     });
-    if (history.length > HISTORY_LIMIT) {
-        history.shift();
-    }
     fs.writeFile(HISTORY_FILE, JSON.stringify(history), (err) => {
         if (err) console.error("Error saving history:", err);
     });

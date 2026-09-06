@@ -304,10 +304,11 @@
     }
 
     function updateCharts(history) {
+        const recentHistory = history.slice(-60);
         const labels = [];
         const tData = [], hData = [], sData = [], lData = [], wData = [], pData = [];
         
-        history.forEach(pt => {
+        recentHistory.forEach(pt => {
             const d = new Date(pt.timestamp);
             labels.push(`${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`);
             tData.push(pt.temperature);
