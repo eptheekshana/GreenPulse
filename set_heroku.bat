@@ -1,0 +1,2 @@
+@echo off
+heroku config:set SMS_KEY="7297|jnC43HAKfPrK8AZ0AYZ9ALYb0Kbs8esmYhTkeLga6a83ed68" ALERT_PHONE_NUMBER="94713167066"
