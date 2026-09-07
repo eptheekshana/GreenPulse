@@ -135,23 +135,6 @@
     setInterval(updateDateTime, 1000);
     updateDateTime();
 
-    const elements = {
-        tempVal: document.getElementById('temp-val'),
-        humVal: document.getElementById('hum-val'),
-        soilVal: document.getElementById('soil-val'),
-        lightVal: document.getElementById('light-val'),
-        waterVal: document.getElementById('water-val'),
-        pumpStatus: document.getElementById('pump-status'),
-        modeStatus: document.getElementById('mode-status'),
-        btnModeAuto: document.getElementById('btn-mode-auto'),
-        btnModeManual: document.getElementById('btn-mode-manual'),
-        btnPumpOn: document.getElementById('btn-pump-on'),
-        btnPumpOff: document.getElementById('btn-pump-off'),
-        alertMessage: document.getElementById('alert-message')
-    };
-
-    let uiLock = false;
-    let uiLockTimeout = null;
     const UPDATE_INTERVAL = 2000;
 
     // Charts Setup
@@ -198,56 +181,12 @@
         options: mainChartOptions
     });
 
-    async function fetchPumpHistory() {
-        try {
-            const res = await fetch('/api/pump-history');
-            if (!res.ok) return;
-            const events = await res.json();
-            
-            const list = document.getElementById('pump-history-list');
-            if (!list) return;
-            
-            if (events.length === 0) {
-                list.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem;">No pump events recorded yet.</div>';
-                return;
-            }
-            
-            let html = '';
-            events.forEach(ev => {
-                const d = new Date(ev.timestamp);
-                const timeStr = `${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
-                const isOn = ev.state === 'ON';
-                const icon = isOn ? '<i class="ph-bold ph-power"></i>' : '<i class="ph-bold ph-power"></i>';
-                const colorClass = isOn ? 'success' : 'warning';
-                
-                html += `
-                    <div class="alert-item" style="padding: 0.75rem; min-width: 100%;">
-                        <div class="alert-icon ${colorClass}" style="width: 24px; height: 24px; font-size: 0.9rem;">${icon}</div>
-                        <div class="alert-text">
-                            <div class="alert-msg">Pump turned ${ev.state}</div>
-                            <div class="alert-time">${timeStr}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            list.innerHTML = html;
-        } catch (e) {
-            console.error('Fetch pump history error:', e);
-        }
-    }
-
     async function fetchSensorData() {
         try {
-            const resData = await fetch('/api/data');
-            if (!resData.ok) return;
-            const data = await resData.json();
-            updateDashboard(data);
-
             const resHist = await fetch('/api/history');
+            if (!resHist.ok) return;
             const history = await resHist.json();
             updateCharts(history);
-
-            fetchPumpHistory();
         } catch (e) {
             console.error('Fetch error:', e);
         }
@@ -255,7 +194,7 @@
 
     function updateCharts(history) {
         const labels = [];
-        const tData = [], hData = [], sData = [], lData = [], wData = [], pData = [];
+        const tData = [], hData = [], sData = [], lData = [], wData = [];
         
         history.forEach(pt => {
             const d = new Date(pt.timestamp);
@@ -265,11 +204,7 @@
             sData.push(pt.soilMoisture);
             lData.push(pt.light);
             wData.push(pt.waterLevel);
-            // pump status history is tricky, just use dummy data for sparkline for now
-            pData.push(Math.random() * 10); 
         });
-
-        const sl = labels.slice(-10);
 
         mainTempChart.data.labels = labels;
         mainTempChart.data.datasets[0].data = tData;
@@ -290,96 +225,6 @@
         mainWaterChart.data.labels = labels;
         mainWaterChart.data.datasets[0].data = wData;
         mainWaterChart.update();
-    }
-
-    function updateDashboard(data) {if (!uiLock) {
-            if (data.pumpActive) {
-                elements.pumpStatus.innerText = "ON";
-                elements.pumpStatus.style.color = "var(--accent-green)";
-            } else {
-                elements.pumpStatus.innerText = "OFF";
-                elements.pumpStatus.style.color = "var(--danger)";
-            }
-            
-            if (data.autoMode) {
-                elements.modeStatus.innerText = "Auto Mode";
-                elements.btnModeAuto.style.borderColor = "var(--accent-green)";
-                elements.btnModeAuto.style.color = "var(--accent-green)";
-                elements.btnModeManual.style.borderColor = "var(--text-muted)";
-                elements.btnModeManual.style.color = "var(--text-muted)";
-                elements.btnPumpOn.disabled = true;
-                elements.btnPumpOff.disabled = true;
-            } else {
-                elements.modeStatus.innerText = "Manual Mode";
-                elements.btnModeManual.style.borderColor = "var(--accent-green)";
-                elements.btnModeManual.style.color = "var(--accent-green)";
-                elements.btnModeAuto.style.borderColor = "var(--text-muted)";
-                elements.btnModeAuto.style.color = "var(--text-muted)";
-                elements.btnPumpOn.disabled = false;
-                elements.btnPumpOff.disabled = false;
-            }
-        }
-    }
-
-    async function sendCommand(payload) {
-        try {
-            const response = await fetch('/api/command', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            if (!response.ok) {
-                const data = await response.json();
-                alert(data.error || 'Command failed');
-                return false;
-            }
-            return true;
-        } catch (e) {
-            alert('Network error');
-            return false;
-        }
-    }
-
-    function applyUiLock() {
-        uiLock = true;
-        if (uiLockTimeout) clearTimeout(uiLockTimeout);
-        uiLockTimeout = setTimeout(() => { uiLock = false; }, 4000);
-    }
-
-    async function setPump(state) {
-        let pin = null;
-        if (state === 'on') {
-            pin = await showPinModal();
-            if (pin === null) return;
-        }
-        
-        const success = await sendCommand({ pumpState: state, pin: pin });
-        if (success) {
-            applyUiLock();
-            elements.pumpStatus.innerText = state === 'on' ? "ON" : "OFF";
-            elements.pumpStatus.style.color = state === 'on' ? "var(--accent-green)" : "var(--danger)";
-        }
-    }
-
-    function setMode(isAuto) {
-        applyUiLock();
-        elements.modeStatus.innerText = isAuto ? "Auto Mode" : "Manual Mode";
-        if (isAuto) {
-            elements.btnModeAuto.style.borderColor = "var(--accent-green)";
-            elements.btnModeAuto.style.color = "var(--accent-green)";
-            elements.btnModeManual.style.borderColor = "var(--text-muted)";
-            elements.btnModeManual.style.color = "var(--text-muted)";
-            elements.btnPumpOn.disabled = true;
-            elements.btnPumpOff.disabled = true;
-        } else {
-            elements.btnModeManual.style.borderColor = "var(--accent-green)";
-            elements.btnModeManual.style.color = "var(--accent-green)";
-            elements.btnModeAuto.style.borderColor = "var(--text-muted)";
-            elements.btnModeAuto.style.color = "var(--text-muted)";
-            elements.btnPumpOn.disabled = false;
-            elements.btnPumpOff.disabled = false;
-        }
-        sendCommand({ autoMode: isAuto });
     }
 
     fetchSensorData();
