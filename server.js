@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const https = require('https');
@@ -7,8 +8,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // SMS Configuration
-const SMS_KEY = "7297|jnC43HAKfPrK8AZ0AYZ9ALYb0Kbs8esmYhTkeLga6a83ed68";
-const ALERT_PHONE_NUMBER = "94713167066"; // TODO: Replace with your actual phone number
+const SMS_KEY = process.env.SMS_KEY;
+const ALERT_PHONE_NUMBER = process.env.ALERT_PHONE_NUMBER;
 
 let smsSent = {
     soilMoisture: false,
