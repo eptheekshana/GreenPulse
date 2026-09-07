@@ -1,33 +1,25 @@
-/* Premium Landing Page Styles */
+/* Classic Landing Page Styles */
 :root {
-    --glass-bg: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-highlight: rgba(255, 255, 255, 0.12);
-    --glow-primary: rgba(34, 197, 94, 0.4);
-    --glow-secondary: rgba(59, 130, 246, 0.4);
+    --primary-color: var(--accent-green, #22c55e);
+    --primary-hover: #16a34a;
 }
 
 body {
-    background: #0b0d12;
+    background-color: var(--bg-main);
+    color: var(--text-main);
     overflow-x: hidden;
 }
-
-
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
-    position: relative;
-    z-index: 10;
 }
 
-/* Glass Navbar */
+/* Classic Navbar */
 .navbar {
-    background: rgba(11, 13, 18, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--glass-border);
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
     padding: 1rem 0;
     position: sticky;
     top: 0;
@@ -59,127 +51,119 @@ body {
     text-decoration: none;
     font-weight: 500;
     font-size: 0.95rem;
-    transition: var(--transition);
+    transition: color 0.2s;
 }
 
 .nav-links a:hover {
-    color: #fff;
-    text-shadow: 0 0 10px rgba(255,255,255,0.3);
+    color: var(--text-main);
 }
 
-/* Buttons */
+/* Classic Buttons */
 .btn-primary {
-    background: linear-gradient(135deg, var(--accent-green), #10b981);
-    color: #000 !important;
+    background-color: var(--primary-color);
+    color: #fff !important;
     border: none;
-    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
-    border-radius: 8px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    text-decoration: none;
+    transition: background-color 0.2s;
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
-    opacity: 1;
+    background-color: var(--primary-hover);
 }
 
 .btn-outline {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    color: #fff;
-    backdrop-filter: blur(4px);
-    border-radius: 8px;
-    transition: all 0.2s;
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
     text-decoration: none;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s;
 }
 
 .btn-outline:hover {
-    background: var(--glass-highlight);
-    border-color: rgba(255,255,255,0.2);
+    border-color: var(--text-muted);
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .btn-large {
-    padding: 1rem 2rem;
+    padding: 0.75rem 1.5rem;
     font-size: 1.1rem;
-    font-weight: 600;
 }
 
-/* Hero Section */
+/* Classic Split Hero */
 .hero {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8rem 4rem;
+    padding: 6rem 0;
     gap: 4rem;
-    min-height: 85vh;
-    background-image: linear-gradient(to right, rgba(17, 19, 24, 0.95) 0%, rgba(17, 19, 24, 0.6) 100%), url('greenhouse_bg.jpg');
-    background-size: cover;
-    background-position: center;
-    border-radius: 24px;
-    border: 1px solid var(--glass-border);
-    margin-top: 2rem;
 }
 
 .hero-content {
     flex: 1;
-    max-width: 650px;
+    max-width: 500px;
 }
 
 .hero-title {
-    font-size: 4rem;
-    line-height: 1.1;
+    font-size: 3.5rem;
+    line-height: 1.2;
     margin-bottom: 1.5rem;
-    background: linear-gradient(to right, #ffffff, #94a3b8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 800;
-    letter-spacing: -1px;
-}
-
-.text-gradient {
-    background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-main);
+    font-weight: 700;
 }
 
 .hero-subtitle {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     color: var(--text-muted);
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
     line-height: 1.6;
 }
 
 .hero-actions {
     display: flex;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
+.hero-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
 
+.hero-image img {
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid var(--border-color);
+}
 
-/* Sections */
+/* Classic Sections */
 .section {
-    padding: 6rem 0;
+    padding: 5rem 0;
+    border-top: 1px solid var(--border-color);
 }
 
 .section-header {
     text-align: center;
-    margin-bottom: 4rem;
+    margin-bottom: 3.5rem;
 }
 
 .section-header h2 {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    background: linear-gradient(to right, #fff, #94a3b8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-main);
 }
 
 .section-header p {
@@ -189,219 +173,115 @@ body {
     margin: 0 auto;
 }
 
-/* Bento Box Features Grid */
-.bento-grid {
+/* Classic 3-Column Grid */
+.features-grid, .hardware-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: minmax(250px, auto);
-    gap: 1.5rem;
-}
-
-.bento-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    padding: 2.5rem;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow: hidden;
-}
-
-.bento-card:hover {
-    transform: translateY(-5px);
-    border-color: rgba(255,255,255,0.15);
-    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
-    background: rgba(255,255,255,0.05);
-}
-
-.bento-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at top right, rgba(255,255,255,0.05) 0%, transparent 70%);
-    pointer-events: none;
-}
-
-.bento-card.wide {
-    grid-column: span 2;
-}
-
-.bento-card.tall {
-    grid-row: span 2;
-}
-
-.bento-icon {
-    width: 60px;
-    height: 60px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    border: 1px solid rgba(255,255,255,0.05);
-}
-
-.icon-green { color: var(--accent-green); box-shadow: 0 0 20px rgba(34,197,94,0.1); }
-.icon-blue { color: var(--accent-blue); box-shadow: 0 0 20px rgba(59,130,246,0.1); }
-.icon-purple { color: var(--accent-purple); box-shadow: 0 0 20px rgba(168,85,247,0.1); }
-.icon-yellow { color: var(--accent-yellow); box-shadow: 0 0 20px rgba(234,179,8,0.1); }
-
-.bento-card h3 {
-    font-size: 1.4rem;
-    margin-bottom: 0.75rem;
-    color: #fff;
-    font-weight: 600;
-}
-
-.bento-card p {
-    color: var(--text-muted);
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: auto;
-}
-
-/* Hardware List (Horizontal Glass Cards) */
-.hardware-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.hw-item {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 1.5rem 2rem;
-    display: flex;
-    align-items: center;
     gap: 2rem;
-    transition: all 0.3s;
 }
 
-.hw-item:hover {
-    background: rgba(255,255,255,0.05);
-    border-color: rgba(255,255,255,0.1);
-    transform: scale(1.02);
+.classic-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 2rem;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.hw-icon {
-    font-size: 2.5rem;
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.classic-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 
-.hw-details h4 {
+.card-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.classic-card h3 {
     font-size: 1.25rem;
-    color: #fff;
-    margin-bottom: 0.25rem;
+    margin-bottom: 1rem;
+    color: var(--text-main);
 }
 
-.hw-details p {
+.classic-card p {
     color: var(--text-muted);
+    line-height: 1.6;
     font-size: 0.95rem;
 }
 
-/* Workflow Timeline */
-.workflow-container {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    padding: 4rem 2rem;
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-}
-
-.workflow-container::after {
-    content: '';
-    position: absolute;
-    top: calc(4rem + 35px); /* Align with the center of the 70px icon */
-    left: 10%;
-    right: 10%;
-    height: 4px; /* Slightly thicker */
-    background: linear-gradient(90deg, transparent, var(--accent-green), var(--accent-blue), transparent);
-    z-index: 1;
-    border-radius: 2px;
-}
-
-.workflow-steps {
+/* Workflow - Classic Row Layout */
+.workflow-row {
     display: flex;
-    justify-content: space-around;
-    position: relative;
-    z-index: 2;
-    gap: 2rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 2rem;
 }
 
-.w-step {
-    text-align: center;
+.workflow-row:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.workflow-image {
     flex: 1;
-    max-width: 300px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--glass-border);
-    padding: 2rem 1.5rem;
-    border-radius: 16px;
-    transition: transform 0.3s;
-}
-
-.w-step:hover {
-    transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-.w-icon-box {
-    width: 70px;
-    height: 70px;
-    background: var(--bg-card);
-    border: 2px solid var(--glass-border);
-    border-radius: 50%;
-    margin: -4rem auto 1.5rem auto; /* Pull it up out of the card */
+    background-color: #374151; /* Placeholder if no image */
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2rem;
-    color: #fff;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    transition: all 0.3s;
-    position: relative;
-    z-index: 3;
+    font-size: 4rem;
+    color: var(--bg-main);
+    overflow: hidden;
 }
 
-.w-step:hover .w-icon-box {
-    border-color: var(--accent-green);
-    box-shadow: 0 0 30px rgba(34,197,94,0.3);
-    color: var(--accent-green);
-    transform: translateY(-5px) scale(1.1);
+.workflow-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
 }
 
-.w-step h4 {
-    font-size: 1.2rem;
+.workflow-row:hover .workflow-image img {
+    transform: scale(1.05);
+}
+
+.workflow-text {
+    flex: 1;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.workflow-number {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     margin-bottom: 0.5rem;
-    color: #fff;
 }
 
-.w-step p {
+.workflow-text h3 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+}
+
+.workflow-text p {
     color: var(--text-muted);
-    font-size: 0.9rem;
+    line-height: 1.6;
 }
 
 /* Footer */
 .footer {
-    border-top: 1px solid var(--glass-border);
-    padding: 3rem 0;
-    margin-top: 4rem;
-    background: rgba(11, 13, 18, 0.5);
-    backdrop-filter: blur(10px);
+    background-color: var(--bg-card);
+    border-top: 1px solid var(--border-color);
+    padding: 2rem 0;
+    margin-top: 2rem;
 }
 
 .footer-content {
@@ -412,66 +292,64 @@ body {
 
 .footer p {
     color: var(--text-muted);
+    font-size: 0.9rem;
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
-    .bento-grid {
+@media (max-width: 992px) {
+    .features-grid, .hardware-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    .bento-card.wide { grid-column: span 1; }
-    .hero-title { font-size: 3rem; }
-}
-
-@media (max-width: 768px) {
     .hero {
         flex-direction: column;
         text-align: center;
-        padding: 4rem 2rem;
+        padding: 4rem 0;
+        gap: 2.5rem;
+    }
+    .hero-content {
+        max-width: 100%;
+    }
+    .hero-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .workflow-row, .workflow-row:nth-child(even) {
+        flex-direction: column;
+    }
+    .workflow-image {
+        padding: 0;
+        min-height: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .features-grid, .hardware-grid {
+        grid-template-columns: 1fr;
+    }
+    .nav-links {
+        display: none;
     }
     .hero-title {
         font-size: 2.5rem;
     }
     .hero-subtitle {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
     }
-    .hero-actions { 
-        justify-content: center; 
-        flex-wrap: wrap; 
+    .section {
+        padding: 3.5rem 0;
     }
-    .bento-grid { grid-template-columns: 1fr; }
-    .bento-card {
+    .section-header h2 {
+        font-size: 1.8rem;
+    }
+    .classic-card {
         padding: 1.5rem;
     }
-    .bento-card.wide, .bento-card.tall { grid-column: span 1; grid-row: span 1; }
-    
-    .workflow-container {
-        padding: 2rem 1rem;
+    .workflow-text {
+        padding: 1.5rem;
     }
-    .workflow-container::after {
-        top: 10%; bottom: 10%;
-        left: 50%; right: auto;
-        width: 4px; height: auto;
-        background: linear-gradient(180deg, transparent, var(--accent-green), var(--accent-blue), transparent);
+    .workflow-text h3 {
+        font-size: 1.4rem;
     }
-    .workflow-steps {
-        flex-direction: column;
-        align-items: center;
-        gap: 5rem;
-        margin-top: 2rem;
-    }
-    .w-step {
-        width: 100%;
-        max-width: 100%;
-        padding: 1.5rem 1rem;
-    }
-    .hw-item { 
-        flex-direction: column; 
-        text-align: center; 
-        gap: 1rem; 
-        padding: 1.5rem; 
-    }
-    .nav-links { display: none; }
     .footer-content {
         flex-direction: column;
         gap: 1.5rem;
@@ -486,13 +364,11 @@ body {
     }
     .hero-actions .btn {
         width: 100%;
-        justify-content: center;
     }
     .nav-container {
         padding: 0 1rem;
     }
-    .btn-primary {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
+    .hero-title {
+        font-size: 2rem;
     }
 }

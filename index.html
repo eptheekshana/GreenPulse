@@ -5,18 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GreenPulse | Smart Greenhouse System</title>
     <link rel="stylesheet" href="style.css?v=2.0">
-    <link rel="stylesheet" href="landing.css?v=2.0">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="landing.css?v=3.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        /* Override global font to use Outfit for headings on landing page */
-        h1, h2, h3, h4, .brand-text { font-family: 'Outfit', sans-serif; }
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
 <body>
 
-
-    <!-- Top Navigation -->
+    <!-- Classic Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="brand" style="padding:0; margin:0; text-decoration:none;">
@@ -38,113 +36,122 @@
 
     <!-- Main Content -->
     <main class="container">
-        <!-- Hero Section -->
+        
+        <!-- Classic Split Hero Section -->
         <section class="hero">
             <div class="hero-content">
-                <h1 class="hero-title">Automate your greenhouse with <span class="text-gradient">GreenPulse</span></h1>
+                <h1 class="hero-title">Automate Your Greenhouse Professionally</h1>
                 <p class="hero-subtitle">
                     A highly reliable, edge-computing powered irrigation and monitoring system. GreenPulse continuously tracks environmental sensors and intelligently controls water pumps based on precise soil saturation levels.
                 </p>
                 <div class="hero-actions">
                     <a href="/dashboard" class="btn btn-primary btn-large">
-                        Access Dashboard <i class="ph-bold ph-arrow-right"></i>
+                        Access Dashboard
                     </a>
                     <a href="#features" class="btn btn-outline btn-large">
                         Explore Features
                     </a>
                 </div>
             </div>
+            <div class="hero-image">
+                <img src="greenhouse_bg.jpg" alt="Greenhouse Environment">
+            </div>
         </section>
 
-        <!-- Features Bento Grid -->
+        <!-- Classic 3-Column Features -->
         <section id="features" class="section">
             <div class="section-header">
-                <h2>Next-Gen Automation</h2>
-                <p>Experience seamless integration of hardware and software designed for the perfect harvest.</p>
+                <h2>System Features</h2>
+                <p>Designed for reliability, efficiency, and full automation without cloud dependencies.</p>
             </div>
-            <div class="bento-grid">
-                <div class="bento-card wide">
-                    <div class="bento-icon icon-green"><i class="ph-fill ph-drop"></i></div>
+            <div class="features-grid">
+                <div class="classic-card">
+                    <div class="card-icon"><i class="ph-fill ph-drop"></i></div>
                     <h3>Automated Irrigation</h3>
                     <p>Precise soil moisture tracking automatically controls water pumps to maintain perfect saturation, preventing both under-watering and over-watering. Your plants get exactly what they need, exactly when they need it.</p>
                 </div>
-                <div class="bento-card tall">
-                    <div class="bento-icon icon-blue"><i class="ph-fill ph-chart-line-up"></i></div>
+                <div class="classic-card">
+                    <div class="card-icon"><i class="ph-fill ph-chart-line-up"></i></div>
                     <h3>Live Telemetry</h3>
-                    <p>High-resolution monitoring of temperature, humidity, and ambient light levels. All metrics are streamed in real-time to your beautifully designed local dashboard with zero latency.</p>
+                    <p>High-resolution monitoring of temperature, humidity, and ambient light levels. All metrics are streamed in real-time to your dashboard with zero latency.</p>
                 </div>
-                <div class="bento-card">
-                    <div class="bento-icon icon-yellow"><i class="ph-fill ph-shield-check"></i></div>
-                    <h3>Fail-Safe Protection</h3>
-                    <p>Integrated reservoir level sensing ensures water pumps are instantly disabled if the tank runs dry, preventing hardware damage.</p>
-                </div>
-                <div class="bento-card">
-                    <div class="bento-icon icon-purple"><i class="ph-fill ph-wifi-high"></i></div>
+                <div class="classic-card">
+                    <div class="card-icon"><i class="ph-fill ph-wifi-high"></i></div>
                     <h3>Local First Edge AI</h3>
                     <p>Operates entirely on your local network. No cloud subscriptions, no data harvesting, and completely independent of internet connectivity.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Hardware Components -->
+        <!-- Hardware Grid -->
         <section id="hardware" class="section">
             <div class="section-header">
                 <h2>Industrial-Grade Hardware</h2>
                 <p>Built with robust components to ensure 24/7 reliability in demanding environments.</p>
             </div>
-            <div class="hardware-list">
-                <div class="hw-item">
-                    <div class="hw-icon"><i class="ph-fill ph-cpu"></i></div>
-                    <div class="hw-details">
-                        <h4>ESP32 Edge Microcontroller</h4>
-                        <p>The main processing unit providing dual-core performance and embedded Wi-Fi hosting capabilities for the entire system ecosystem.</p>
-                    </div>
+            <div class="hardware-grid">
+                <div class="classic-card">
+                    <div class="card-icon" style="color: #3b82f6;"><i class="ph-fill ph-cpu"></i></div>
+                    <h3>ESP32 Microcontroller</h3>
+                    <p>The main processing unit providing dual-core performance and embedded Wi-Fi hosting capabilities for the entire system ecosystem.</p>
                 </div>
-                <div class="hw-item">
-                    <div class="hw-icon"><i class="ph-fill ph-thermometer"></i></div>
-                    <div class="hw-details">
-                        <h4>Climate & Light Matrix</h4>
-                        <p>Integrated DHT11 and LDR sensors provide highly accurate ambient temperature, relative humidity, and light intensity readings.</p>
-                    </div>
+                <div class="classic-card">
+                    <div class="card-icon" style="color: #eab308;"><i class="ph-fill ph-thermometer"></i></div>
+                    <h3>Climate Matrix</h3>
+                    <p>Integrated DHT11 and LDR sensors provide highly accurate ambient temperature, relative humidity, and light intensity readings.</p>
                 </div>
-                <div class="hw-item">
-                    <div class="hw-icon"><i class="ph-fill ph-waves"></i></div>
-                    <div class="hw-details">
-                        <h4>Soil & Reservoir Probes</h4>
-                        <p>Analog resistive sensors provide raw voltage feedback that is mapped to precise saturation and volume percentages in real-time.</p>
-                    </div>
+                <div class="classic-card">
+                    <div class="card-icon" style="color: #0ea5e9;"><i class="ph-fill ph-waves"></i></div>
+                    <h3>Analog Probes</h3>
+                    <p>Analog resistive sensors provide raw voltage feedback that is mapped to precise saturation and volume percentages in real-time.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Workflow Timeline -->
+        <!-- Workflow Alternating Rows -->
         <section id="workflow" class="section">
             <div class="section-header">
                 <h2>Intelligent Execution Loop</h2>
                 <p>The core logic engine running continuously on the edge.</p>
             </div>
-            <div class="workflow-container">
-                <div class="workflow-steps">
-                    <div class="w-step">
-                        <div class="w-icon-box"><i class="ph-bold ph-radar"></i></div>
-                        <h4>1. Polling Phase</h4>
-                        <p>Reads raw analog and digital data every 2000ms.</p>
-                    </div>
-                    <div class="w-step">
-                        <div class="w-icon-box"><i class="ph-bold ph-faders"></i></div>
-                        <h4>2. Analysis Phase</h4>
-                        <p>Compares real-time readings against predefined optimal growth thresholds.</p>
-                    </div>
-                    <div class="w-step">
-                        <div class="w-icon-box"><i class="ph-bold ph-lightning"></i></div>
-                        <h4>3. Execution Phase</h4>
-                        <p>Solid-state relays trigger irrigation if soil is dry and water reserves are sufficient.</p>
-                    </div>
+            
+            <div class="workflow-row">
+                <div class="workflow-image">
+                    <img src="workflow_polling.jpg" alt="Polling Phase">
+                </div>
+                <div class="workflow-text">
+                    <div class="workflow-number">Phase 1</div>
+                    <h3>Polling Phase</h3>
+                    <p>The ESP32 microcontroller continuously reads raw analog and digital data every 2000ms. It aggregates this data over short intervals to smooth out anomalies.</p>
+                </div>
+            </div>
+
+            <div class="workflow-row">
+                <div class="workflow-image">
+                    <img src="workflow_analysis.jpg" alt="Analysis Phase">
+                </div>
+                <div class="workflow-text">
+                    <div class="workflow-number">Phase 2</div>
+                    <h3>Analysis Phase</h3>
+                    <p>The system compares real-time environmental readings against predefined optimal growth thresholds configured locally on the device.</p>
+                </div>
+            </div>
+
+            <div class="workflow-row">
+                <div class="workflow-image">
+                    <img src="workflow_execution.jpg" alt="Execution Phase">
+                </div>
+                <div class="workflow-text">
+                    <div class="workflow-number">Phase 3</div>
+                    <h3>Execution Phase</h3>
+                    <p>Solid-state relays trigger irrigation if the soil is detected to be dry and the reservoir water reserves are confirmed to be sufficient.</p>
                 </div>
             </div>
         </section>
+
     </main>
 
+    <!-- Classic Footer -->
     <footer class="footer">
         <div class="container footer-content">
             <a href="/" class="brand" style="padding:0; margin:0; text-decoration:none;">
