@@ -7,25 +7,50 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // SMS Configuration
-const SMS_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTc1NjMsImN1c3RvbWVyX3JvbGUiOjAsImlhdCI6MTc4ODI3OTU2NywiZXhwIjo0OTEyNDgxOTY3fQ.lll7nR_8V3Nvt4QKGUdpRgnvYaKw7jwld7zqmFGbR5w";
-const ALERT_PHONE_NUMBER = "94713167066"; // TODO: Replace with your actual phone number (e.g. 9477xxxxxxx)
+const SMS_KEY = "7297|jnC43HAKfPrK8AZ0AYZ9ALYb0Kbs8esmYhTkeLga6a83ed68";
+const ALERT_PHONE_NUMBER = "94713167066"; // TODO: Replace with your actual phone number
 
 let smsSent = {
     soilMoisture: false,
-    waterLevel: false
+    waterLevel: false,
+    humidity: false,
+    light: false
 };
 
 function sendSMS(message) {
     console.log("Sending SMS Alert:", message);
-    const url = `https://richcommunication.dialog.lk/api/sms/inline/send.php?destination=${ALERT_PHONE_NUMBER}&q=${SMS_KEY}&message=${encodeURIComponent(message)}`;
+    
+    const postData = JSON.stringify({
+        recipient: ALERT_PHONE_NUMBER,
+        sender_id: "TextLKDemo",
+        type: "plain",
+        message: message
+    });
 
-    https.get(url, (res) => {
+    const options = {
+        hostname: 'app.text.lk',
+        path: '/api/v3/sms/send',
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${SMS_KEY}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Content-Length': Buffer.byteLength(postData)
+        }
+    };
+
+    const req = https.request(options, (res) => {
         let data = '';
         res.on('data', chunk => data += chunk);
-        res.on('end', () => console.log('Dialog eSMS Response:', data));
-    }).on('error', err => {
-        console.error('Dialog eSMS Error:', err.message);
+        res.on('end', () => console.log('Text.lk API Response:', data));
     });
+
+    req.on('error', err => {
+        console.error('Text.lk API Error:', err.message);
+    });
+
+    req.write(postData);
+    req.end();
 }
 
 // Middleware to parse JSON bodies
@@ -168,6 +193,22 @@ app.post('/api/telemetry', (req, res) => {
         smsSent.waterLevel = true;
     } else if (state.waterLevel >= 25) {
         smsSent.waterLevel = false; // Reset alert
+    }
+
+    // Alert if Humidity is below 40%
+    if (state.humidity < 40 && !smsSent.humidity) {
+        sendSMS(`GreenPulse ALERT: Humidity is low (${Math.round(state.humidity)}%).`);
+        smsSent.humidity = true;
+    } else if (state.humidity >= 45) {
+        smsSent.humidity = false;
+    }
+
+    // Alert if Brightness is below 20%
+    if (state.light < 20 && !smsSent.light) {
+        sendSMS(`GreenPulse ALERT: Brightness level is low (${Math.round(state.light)}%).`);
+        smsSent.light = true;
+    } else if (state.light >= 25) {
+        smsSent.light = false;
     }
     // -----------------------
 
