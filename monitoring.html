@@ -395,7 +395,7 @@
     async function setPump(state) {
         let pin = null;
         if (state === 'on') {
-            pin = prompt("Enter PIN to turn on the pump:");
+            pin = await showPinModal();
             if (pin === null) return;
         }
         
@@ -431,6 +431,7 @@
     fetchSensorData();
     setInterval(fetchSensorData, UPDATE_INTERVAL);
 </script>
+<script src="pinModal.js"></script>
 <script src="notifications.js"></script>
 </body>
 </html>
